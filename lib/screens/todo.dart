@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:notequest/models/todo.dart';
 import 'package:notequest/widgets/counter.dart';
 import 'package:notequest/widgets/inputchip.dart';
 import '../widgets/list.dart';
@@ -130,6 +131,17 @@ class _AddTodoState extends State<AddTodo> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    DropdownMenu(
+                      initialSelection: TodoState.todo,
+                      width: MediaQuery.of(context).size.width / 2,
+                      dropdownMenuEntries: <DropdownMenuEntry<TodoState>>[
+                        for (var value in TodoState.values)
+                          DropdownMenuEntry(
+                            value: value,
+                            label: value.name.toUpperCase(),
+                          ),
+                      ],
+                    ),
                     Counter(
                       controller: _priorityController,
                     ),
@@ -140,6 +152,7 @@ class _AddTodoState extends State<AddTodo> {
             ],
           ),
         ),
+        SizedBox(height: 7),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -158,6 +171,8 @@ class _AddTodoState extends State<AddTodo> {
                 },
                 child: Text("save"))
           ],
+        ),
+        SizedBox(height: 7),
       ],
     );
   }
