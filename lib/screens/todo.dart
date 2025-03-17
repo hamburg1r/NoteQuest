@@ -13,28 +13,29 @@ class Todo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appbar(Text('Todo')),
-        body: TodoTiles(),
-        floatingActionButton: FloatingActionButton(
-          shape: CircleBorder(),
-          //onPressed: () => showModalBottomSheet(
-          //	context: context,
-          //	enableDrag: true,
-          //	isScrollControlled: true,
-          //	builder: (ctx) => AddTodo()
-          //),
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (context) => Scaffold(
-                  appBar: AppBar(
-                    title: Text('Add Todo'),
-                  ),
-                  body: SafeArea(child: AddTodo()),
+      appBar: appbar(Text('Todo')),
+      body: TodoTiles(),
+      floatingActionButton: FloatingActionButton(
+        shape: CircleBorder(),
+        //onPressed: () => showModalBottomSheet(
+        //	context: context,
+        //	enableDrag: true,
+        //	isScrollControlled: true,
+        //	builder: (ctx) => AddTodo()
+        //),
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) => Scaffold(
+                appBar: AppBar(
+                  title: Text('Add Todo'),
                 ),
-              )),
-          child: Icon(Icons.add),
-        ));
+                body: SafeArea(child: AddTodo()),
+              ),
+            )),
+        child: Icon(Icons.add),
+      ),
+    );
   }
 }
 
@@ -47,8 +48,9 @@ class AddTodo extends StatefulWidget {
 
 class _AddTodoState extends State<AddTodo> {
   late TextEditingController _titleController;
-  TagController _tagController = TagController();
-  CounterController _priorityController = CounterController();
+  final TagController _tagController = TagController();
+  final CounterController _priorityController =
+      CounterController(initialValue: 3);
   late TextEditingController _subTaskController;
   late TextEditingController _scheduledTimeController;
   late TextEditingController _dueTimeController;
@@ -116,24 +118,24 @@ class _AddTodoState extends State<AddTodo> {
                   decoration: decoration('Title'),
                 ),
               ),
-              InputWithChips(
-                label: "Tag",
-                controller: _tagController,
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: InputWithChips(
+                  label: "Tag",
+                  controller: _tagController,
+                ),
               ),
-              //Padding(
-              //	padding: padding,
-              //	child: DropdownMenu<String>(
-              //		dropdownMenuEntries: <DropdownMenuEntry<String>> [
-              //			for (int i=0; i<=highestPriority; i++) DropdownMenuEntry(value: i.toString(), label: i.toString())
-              //		],
-              //		onSelected: (String? value) {
-              //			dropdownValue = value ?? "";
-              //		},
-              //		initialSelection: dropdownValue,
-              //	),
-              //)
-              Counter(
-                controller: _priorityController,
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Counter(
+                      controller: _priorityController,
+                    ),
+                  ],
+                ),
+              ),
               )
             ],
           ),
@@ -156,7 +158,6 @@ class _AddTodoState extends State<AddTodo> {
                 },
                 child: Text("save"))
           ],
-        )
       ],
     );
   }
