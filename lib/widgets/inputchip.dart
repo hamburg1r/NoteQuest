@@ -72,24 +72,21 @@ class _InputWithChipsState extends State<InputWithChips> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: widget.label,
-            ),
-            controller: _controller,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: widget.label,
           ),
-          Wrap(
-            children: <Widget>[...chips.values],
-          )
-        ],
-      ),
+          controller: _controller,
+        ),
+        Wrap(
+          children: <Widget>[...chips.values],
+        )
+      ],
     );
   }
 }
