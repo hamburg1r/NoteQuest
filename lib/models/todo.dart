@@ -6,8 +6,8 @@ part 'todo.g.dart';
 
 enum TodoState {
   todo,
-  done,
   doing,
+  done,
   next,
 }
 
