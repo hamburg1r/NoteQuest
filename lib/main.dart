@@ -199,8 +199,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   }
                 },
-                leading: Icon(Icons.home),
-                title: Text('Home'),
+                leading: Icon(Icons.notes),
+                title: Text('Todo'),
               ),
               ListTile(
                 onTap: () {
@@ -210,8 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   }
                 },
-                leading: Icon(Icons.account_circle_rounded),
-                title: Text('Profile'),
+                leading: Icon(Icons.calendar_month),
+                title: Text('Calendar'),
               ),
               ListTile(
                 onTap: () {

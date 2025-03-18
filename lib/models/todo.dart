@@ -30,8 +30,19 @@ class TodoModel with _$TodoModel {
 
 @riverpod
 class TodoList extends _$TodoList {
+  // TODO: Create map which uses map to save todo data
   @override
-  Future<List<TodoModel>> build() async {
+  List<TodoModel> build() {
     return <TodoModel>[];
+  }
+
+  void addTodo(TodoModel todo) {
+    // TODO: Saving mechanism
+    state = [...state, todo];
+  }
+
+  void removeTodo(TodoModel todo) {
+    // TODO: Deleting mechanism
+    state = List.from(state)..remove(todo);
   }
 }

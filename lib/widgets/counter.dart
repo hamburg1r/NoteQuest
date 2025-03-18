@@ -27,7 +27,6 @@ class _CounterState extends State<Counter> {
       children: [
         OutlinedButton(
           style: OutlinedButton.styleFrom(
-            maximumSize: Size(double.infinity, double.infinity),
             shape: RoundedRectangleBorder(
               side: border,
               borderRadius: BorderRadius.only(
@@ -46,7 +45,6 @@ class _CounterState extends State<Counter> {
         OutlinedButton(
           onPressed: () {},
           style: OutlinedButton.styleFrom(
-            maximumSize: Size(double.infinity, double.infinity),
             foregroundColor: ColorScheme.of(context).secondaryFixedDim,
             //backgroundColor: ColorScheme.of(context).secondaryFixedDim,
             shape: RoundedRectangleBorder(
@@ -61,7 +59,6 @@ class _CounterState extends State<Counter> {
         ),
         OutlinedButton(
           style: OutlinedButton.styleFrom(
-            maximumSize: Size(double.infinity, double.infinity),
             shape: RoundedRectangleBorder(
               side: border,
               borderRadius: BorderRadius.only(

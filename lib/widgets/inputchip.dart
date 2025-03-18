@@ -45,18 +45,20 @@ class _InputWithChipsState extends State<InputWithChips> {
   }
 
   void createChip(String text) {
+    // TODO: save avatar icons
+    var avatarIcon = Container(
+      decoration: BoxDecoration(
+        color: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+        shape: BoxShape.circle,
+      ),
+    );
+
     if (text != '')
       setState(() {
         print('From create chip: $text');
         chips[text] = InputChip(
             label: Text(text),
-            avatar: Container(
-              decoration: BoxDecoration(
-                color:
-                    Colors.primaries[Random().nextInt(Colors.primaries.length)],
-                shape: BoxShape.circle,
-              ),
-            ),
+            avatar: avatarIcon,
             onDeleted: () => setState(() {
                   chips.remove(text);
                   updateController();
