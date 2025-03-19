@@ -149,6 +149,7 @@ class _TodoDetails extends ConsumerWidget {
             padding: padding,
             child: TextFormField(
               controller: childControllers['title'],
+              textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.next,
               autofocus: true,
               decoration: InputDecoration(
