@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -228,9 +226,9 @@ class _TodoDetails extends ConsumerWidget {
 
 @riverpod
 class ErrorMessage extends _$ErrorMessage {
-  String? message;
+  @override
   String? build() {
-    return message;
+    return null;
   }
 
   void setMessage(String? msg) {
