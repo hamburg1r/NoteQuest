@@ -45,7 +45,7 @@ class _InputWithChipsState extends State<InputWithChips> {
   }
 
   void createChip(String text) {
-    // TODO: save avatar icons
+    // TODO: save avatar icons: priority low
     var avatarIcon = Container(
       decoration: BoxDecoration(
         color: Colors.primaries[Random().nextInt(Colors.primaries.length)],
@@ -53,7 +53,7 @@ class _InputWithChipsState extends State<InputWithChips> {
       ),
     );
 
-    if (text != '')
+    if (text != '') {
       setState(() {
         print('From create chip: $text');
         chips[text] = InputChip(
@@ -65,6 +65,7 @@ class _InputWithChipsState extends State<InputWithChips> {
                 }));
         updateController();
       });
+    }
   }
 
   void updateController() {

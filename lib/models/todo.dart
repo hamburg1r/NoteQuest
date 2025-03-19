@@ -30,19 +30,19 @@ class TodoModel with _$TodoModel {
 
 @riverpod
 class TodoList extends _$TodoList {
-  // TODO: Create map which uses map to save todo data
+  // TODO: Create map which uses map to save todo data: priority moderate
   @override
   List<TodoModel> build() {
     return <TodoModel>[];
   }
 
   void addTodo(TodoModel todo) {
-    // TODO: Saving mechanism
+    // TODO: Saving mechanism: priority low
     state = [...state, todo];
   }
 
   void removeTodo(TodoModel todo) {
-    // TODO: Deleting mechanism
+    // TODO: Deleting mechanism: priority low
     state = List.from(state)..remove(todo);
   }
 }
