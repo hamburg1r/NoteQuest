@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:notequest/utils.dart';
 import '../models/todo.dart';
 
 class TodoTiles extends ConsumerWidget {
@@ -15,36 +16,56 @@ class TodoTiles extends ConsumerWidget {
       return ListView.separated(
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
+          var todo = data[index];
           return TileWithOptions(
             icon: Text(index.toString()),
             title: Text(
-              data[index].title,
+              todo.title,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             summary: Column(
               //mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: 5,
-                  children: <Widget>[
-                    for (String tag in data[index].tag)
-                      InputChip(
-                        // TODO: load saved avatar icons
-                        avatar: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.primaries[
-                                Random().nextInt(Colors.primaries.length)],
-                            shape: BoxShape.circle,
+                //if (todo.scheduledTime)
+                if (todo.scheduledTime != null)
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_month),
+                      Text(customDateFormat(todo.scheduledTime!, true)),
+                    ],
+                  ),
+                if (todo.dueTime != null)
+                  Row(
+                    children: [
+                      Icon(Icons.schedule),
+                      Text(customDateFormat(todo.dueTime!, true)),
+                    ],
+                  ),
+                if (todo.tag.isNotEmpty)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      spacing: 5,
+                      children: <Widget>[
+                        for (String tag in todo.tag)
+                          InputChip(
+                            // TODO: load saved avatar icons
+                            avatar: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.primaries[
+                                    Random().nextInt(Colors.primaries.length)],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            label: Text(tag),
                           ),
-                        ),
-                        label: Text(tag),
-                      ),
-                  ],
-                ),
+                      ],
+                    ),
+                  ),
               ],
             ),
-            todo: data[index],
+            todo: todo,
           );
         },
         separatorBuilder: (BuildContext context, int index) => Divider(),
@@ -75,18 +96,6 @@ class TileWithOptions extends ConsumerWidget {
       subtitle: summary,
       trailing: MenuAnchor(
         menuChildren: [
-          MenuItemButton(
-            onPressed: () {
-              ref.read(todoListProvider.notifier).addTodo(
-                    TodoModel(
-                      id: 'asdf',
-                      title: 'hello',
-                    ),
-                  );
-              print(ref.watch(todoListProvider));
-            },
-            child: const Text('Shit'),
-          ),
           MenuItemButton(
             onPressed: () {
               ref.read(todoListProvider.notifier).removeTodo(todo);
