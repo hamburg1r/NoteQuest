@@ -12,6 +12,12 @@ class TodoTiles extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final listProvider = ref.watch(todoListProvider);
     final List<TodoModel> data = listProvider;
+
+    final subtextColor =
+        Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(150);
+    final subtextTextStyle =
+        Theme.of(context).textTheme.bodySmall!.copyWith(color: subtextColor);
+
     if (data.isNotEmpty) {
       return ListView.separated(
         itemCount: data.length,
@@ -87,8 +93,14 @@ class TodoTiles extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // TODO: make this permanent: priority high
-                        Text('+ notes'),
-                        Text('0 subtasks'),
+                        Text(
+                          style: subtextTextStyle,
+                          '+ notes',
+                        ),
+                        Text(
+                          style: subtextTextStyle,
+                          '0 subtasks',
+                        ),
                       ],
                     ),
                     Spacer(),
@@ -98,22 +110,11 @@ class TodoTiles extends ConsumerWidget {
                           Row(
                             children: [
                               Icon(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant
-                                    .withAlpha(150),
+                                color: subtextColor,
                                 Icons.calendar_month,
                               ),
                               Text(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant
-                                          .withAlpha(150),
-                                    ),
+                                style: subtextTextStyle,
                                 customDateFormat(
                                   todo.scheduledTime!,
                                   true,
@@ -125,22 +126,11 @@ class TodoTiles extends ConsumerWidget {
                           Row(
                             children: [
                               Icon(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant
-                                    .withAlpha(150),
+                                color: subtextColor,
                                 Icons.schedule,
                               ),
                               Text(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant
-                                          .withAlpha(150),
-                                    ),
+                                style: subtextTextStyle,
                                 customDateFormat(
                                   todo.dueTime!,
                                   true,
