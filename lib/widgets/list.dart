@@ -17,31 +17,47 @@ class TodoTiles extends ConsumerWidget {
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
           var todo = data[index];
-          return TileWithOptions(
-            icon: Text(index.toString()),
-            title: Text(
-              todo.title,
-              style: Theme.of(context).textTheme.headlineMedium,
+          return ListTile(
+            leading: Text((index + 1).toString()),
+            title: Row(
+              //crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  todo.title,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                MenuAnchor(
+                  menuChildren: [
+                    MenuItemButton(
+                      onPressed: () {
+                        ref.read(todoListProvider.notifier).removeTodo(todo);
+                        print(ref.watch(todoListProvider));
+                      },
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                  builder: (_, MenuController controller, Widget? child) {
+                    return IconButton(
+                      //focusNode: _buttonFocusNode,
+                      onPressed: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      icon: const Icon(Icons.more_vert),
+                    );
+                  },
+                ),
+              ],
             ),
-            summary: Column(
+            subtitle: Column(
               //mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //if (todo.scheduledTime)
-                if (todo.scheduledTime != null)
-                  Row(
-                    children: [
-                      Icon(Icons.calendar_month),
-                      Text(customDateFormat(todo.scheduledTime!, true)),
-                    ],
-                  ),
-                if (todo.dueTime != null)
-                  Row(
-                    children: [
-                      Icon(Icons.schedule),
-                      Text(customDateFormat(todo.dueTime!, true)),
-                    ],
-                  ),
                 if (todo.tag.isNotEmpty)
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -50,7 +66,7 @@ class TodoTiles extends ConsumerWidget {
                       children: <Widget>[
                         for (String tag in todo.tag)
                           InputChip(
-                            // TODO: load saved avatar icons
+                            // TODO: load saved avatar icons: priority low
                             avatar: Container(
                               decoration: BoxDecoration(
                                 color: Colors.primaries[
@@ -63,9 +79,82 @@ class TodoTiles extends ConsumerWidget {
                       ],
                     ),
                   ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Placeholder(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // TODO: make this permanent: priority high
+                        Text('+ notes'),
+                        Text('0 subtasks'),
+                      ],
+                    ),
+                    Spacer(),
+                    Column(
+                      children: [
+                        if (todo.scheduledTime != null)
+                          Row(
+                            children: [
+                              Icon(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant
+                                    .withAlpha(150),
+                                Icons.calendar_month,
+                              ),
+                              Text(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant
+                                          .withAlpha(150),
+                                    ),
+                                customDateFormat(
+                                  todo.scheduledTime!,
+                                  true,
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (todo.dueTime != null)
+                          Row(
+                            children: [
+                              Icon(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant
+                                    .withAlpha(150),
+                                Icons.schedule,
+                              ),
+                              Text(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant
+                                          .withAlpha(150),
+                                    ),
+                                customDateFormat(
+                                  todo.dueTime!,
+                                  true,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
-            todo: todo,
+            //todo: todo,
           );
         },
         separatorBuilder: (BuildContext context, int index) => Divider(),
@@ -77,47 +166,5 @@ class TodoTiles extends ConsumerWidget {
         style: Theme.of(context).textTheme.displaySmall,
       ));
     }
-  }
-}
-
-class TileWithOptions extends ConsumerWidget {
-  final Widget? title;
-  final Widget? summary;
-  final Widget? icon;
-  final TodoModel todo;
-  const TileWithOptions(
-      {this.title, this.summary, this.icon, required this.todo, super.key});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      titleAlignment: ListTileTitleAlignment.top,
-      // leading: , // todo icon possibly?
-      title: title,
-      subtitle: summary,
-      trailing: MenuAnchor(
-        menuChildren: [
-          MenuItemButton(
-            onPressed: () {
-              ref.read(todoListProvider.notifier).removeTodo(todo);
-              print(ref.watch(todoListProvider));
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-        builder: (_, MenuController controller, Widget? child) {
-          return IconButton(
-            //focusNode: _buttonFocusNode,
-            onPressed: () {
-              if (controller.isOpen) {
-                controller.close();
-              } else {
-                controller.open();
-              }
-            },
-            icon: const Icon(Icons.more_vert),
-          );
-        },
-      ),
-    );
   }
 }
