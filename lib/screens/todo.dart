@@ -19,16 +19,7 @@ class Todo extends StatelessWidget {
         //	isScrollControlled: true,
         //	builder: (ctx) => AddTodo()
         //),
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (context) => Scaffold(
-                appBar: AppBar(
-                  title: Text('Add Todo'),
-                ),
-                body: SafeArea(child: AddTodo()),
-              ),
-            )),
+        onPressed: () => todoFormPage(context),
         child: Icon(Icons.add),
       ),
     );

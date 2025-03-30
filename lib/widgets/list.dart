@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:notequest/screens/addtodo.dart';
 import 'package:notequest/utils.dart';
 import '../models/todo.dart';
 
@@ -11,18 +12,19 @@ class TodoTiles extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final listProvider = ref.watch(todoListProvider);
-    final List<TodoModel> data = listProvider;
+    final Map<String, TodoModel> data = listProvider;
 
     final subtextColor =
         Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(150);
     final subtextTextStyle =
-        Theme.of(context).textTheme.bodySmall!.copyWith(color: subtextColor);
+        Theme.of(context).textTheme.labelSmall!.copyWith(color: subtextColor);
 
     if (data.isNotEmpty) {
       return ListView.separated(
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
-          var todo = data[index];
+          var id = data.keys.toList()[index];
+          var todo = data[id]!;
           return ListTile(
             leading: Text((index + 1).toString()),
             title: Row(
@@ -35,6 +37,14 @@ class TodoTiles extends ConsumerWidget {
                 ),
                 MenuAnchor(
                   menuChildren: [
+                    MenuItemButton(
+                      onPressed: () {
+                        //ref.read(todoListProvider.notifier).removeTodo(todo);
+                        todoFormPage(context, id: id);
+                        print(ref.watch(todoListProvider));
+                      },
+                      child: const Text('Edit'),
+                    ),
                     MenuItemButton(
                       onPressed: () {
                         ref.read(todoListProvider.notifier).removeTodo(todo);
@@ -64,27 +74,6 @@ class TodoTiles extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //if (todo.scheduledTime)
-                if (todo.tag.isNotEmpty)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      spacing: 5,
-                      children: <Widget>[
-                        for (String tag in todo.tag)
-                          InputChip(
-                            // TODO: load saved avatar icons: priority low
-                            avatar: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.primaries[
-                                    Random().nextInt(Colors.primaries.length)],
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            label: Text(tag),
-                          ),
-                      ],
-                    ),
-                  ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -142,6 +131,27 @@ class TodoTiles extends ConsumerWidget {
                     ),
                   ],
                 ),
+                if (todo.tag.isNotEmpty)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      spacing: 5,
+                      children: <Widget>[
+                        for (String tag in todo.tag)
+                          InputChip(
+                            // TODO: load saved avatar icons: priority low
+                            avatar: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.primaries[
+                                    Random().nextInt(Colors.primaries.length)],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            label: Text(tag),
+                          ),
+                      ],
+                    ),
+                  ),
               ],
             ),
             //todo: todo,

@@ -6,7 +6,7 @@ part of 'addtodo.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$errorMessageHash() => r'57db4211643c530acb62256ef98dc61e08677915';
+String _$errorMessageHash() => r'f67ff36cf96baf7c200f49f8b34679a1f478c011';
 
 /// See also [ErrorMessage].
 @ProviderFor(ErrorMessage)

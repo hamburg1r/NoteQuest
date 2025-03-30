@@ -49,12 +49,12 @@ const _$TodoStateEnumMap = {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$todoListHash() => r'13170323e0726bbfc2fc33cd93c48f42800cf8da';
+String _$todoListHash() => r'38189a723a84928b67fd4d99355a9eebfa25f26a';
 
 /// See also [TodoList].
 @ProviderFor(TodoList)
 final todoListProvider =
-    AutoDisposeNotifierProvider<TodoList, List<TodoModel>>.internal(
+    AutoDisposeNotifierProvider<TodoList, Map<String, TodoModel>>.internal(
   TodoList.new,
   name: r'todoListProvider',
   debugGetCreateSourceHash:
@@ -63,6 +63,6 @@ final todoListProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$TodoList = AutoDisposeNotifier<List<TodoModel>>;
+typedef _$TodoList = AutoDisposeNotifier<Map<String, TodoModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

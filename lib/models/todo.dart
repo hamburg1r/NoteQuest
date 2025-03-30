@@ -32,17 +32,18 @@ class TodoModel with _$TodoModel {
 class TodoList extends _$TodoList {
   // TODO: Create map which uses map to save todo data: priority moderate
   @override
-  List<TodoModel> build() {
-    return <TodoModel>[];
+  Map<String, TodoModel> build() {
+    return <String, TodoModel>{};
   }
 
-  void addTodo(TodoModel todo) {
+  void updateTodos(TodoModel todo) {
     // TODO: Saving mechanism: priority low
-    state = [...state, todo];
+    state[todo.id.toString()] = todo;
   }
 
   void removeTodo(TodoModel todo) {
     // TODO: Deleting mechanism: priority low
-    state = List.from(state)..remove(todo);
+
+    //state = List.from(state)..remove(todo);
   }
 }

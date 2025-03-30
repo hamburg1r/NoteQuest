@@ -10,14 +10,28 @@ import 'package:uuid/uuid.dart';
 
 part 'addtodo.g.dart';
 
-class AddTodo extends StatefulWidget {
-  const AddTodo({super.key});
+Future<void> todoFormPage(context, {id}) => Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text('Add Todo'),
+          ),
+          body: TodoForm(id: id),
+        ),
+      ),
+    );
+
+class TodoForm extends ConsumerStatefulWidget {
+  const TodoForm({this.id, super.key});
+
+  final String? id;
 
   @override
-  State<AddTodo> createState() => _AddTodoState();
+  ConsumerState<TodoForm> createState() => _TodoFormState();
 }
 
-class _AddTodoState extends State<AddTodo> {
+class _TodoFormState extends ConsumerState<TodoForm> {
   final Map<String, dynamic> childControllers = {
     'title': TextEditingController(),
     'tag': TagController(),
@@ -27,7 +41,8 @@ class _AddTodoState extends State<AddTodo> {
     'dueTime': DateTimePickerController(),
     'subTask': TextEditingController(),
   };
-  late final String uuid = Uuid().v4();
+  late final String uuid = widget.id ?? Uuid().v4();
+  late final TodoModel? todo = ref.watch(todoListProvider)[uuid];
 
   @override
   void initState() {
@@ -56,8 +71,10 @@ class _AddTodoState extends State<AddTodo> {
           child: TextFormField(
             textInputAction: TextInputAction.next,
             autofocus: autofocus,
-            decoration:
-                InputDecoration(border: OutlineInputBorder(), labelText: label),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: label,
+            ),
           ),
         ),
       ),
@@ -67,6 +84,18 @@ class _AddTodoState extends State<AddTodo> {
   @override
   Widget build(BuildContext context) {
     // TODO: modularize this piece of shit
+    if (todo != null) {
+      (childControllers['title'] as TextEditingController).text = todo!.title;
+      (childControllers['tag'] as TagController).items = todo!.tag;
+      (childControllers['priority'] as CounterController).count =
+          todo!.priority;
+      (childControllers['state'] as TextEditingController).text =
+          todo!.state.name;
+      (childControllers['scheduledTime'] as DateTimePickerController).dateTime =
+          todo!.scheduledTime;
+      (childControllers['dueTime'] as DateTimePickerController).dateTime =
+          todo!.dueTime;
+    }
 
     //String dropdownValue = 3.toString();
 
@@ -91,12 +120,18 @@ class _AddTodoState extends State<AddTodo> {
                 builder: (context, ref, child) {
                   return FilledButton(
                     onPressed: () {
-                      if (childControllers['title'].text.isNotEmpty) {
-                        ref.read(todoListProvider.notifier).addTodo(
+                      if ((childControllers['title'] as TextEditingController)
+                          .text
+                          .isNotEmpty) {
+                        ref.read(todoListProvider.notifier).updateTodos(
                               TodoModel(
                                 id: uuid,
-                                title: childControllers['title'].text,
-                                priority: childControllers['priority'].count,
+                                title: (childControllers['title']
+                                        as TextEditingController)
+                                    .text,
+                                priority: (childControllers['priority']
+                                        as CounterController)
+                                    .count,
                                 tag: childControllers['tag'].items,
                                 state: TodoState.values.asNameMap()[
                                     childControllers['state']
