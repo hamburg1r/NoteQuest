@@ -39,7 +39,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
     'state': TextEditingController(),
     'scheduledTime': DateTimePickerController(),
     'dueTime': DateTimePickerController(),
-    'subTask': TextEditingController(),
+    'description': TextEditingController(),
   };
   late final String uuid = widget.id ?? Uuid().v4();
   late final TodoModel? todo = ref.watch(todoListProvider)[uuid];
@@ -95,6 +95,10 @@ class _TodoFormState extends ConsumerState<TodoForm> {
           todo!.scheduledTime;
       (childControllers['dueTime'] as DateTimePickerController).dateTime =
           todo!.dueTime;
+      if (todo!.hasMarkdown) {
+        // TODO: load markdown from saved file
+        (childControllers['subTask'] as TextEditingController).text = '';
+      }
     }
 
     //String dropdownValue = 3.toString();
@@ -123,24 +127,27 @@ class _TodoFormState extends ConsumerState<TodoForm> {
                       if ((childControllers['title'] as TextEditingController)
                           .text
                           .isNotEmpty) {
+                        var todo = TodoModel(
+                          id: uuid,
+                          title: (childControllers['title']
+                                  as TextEditingController)
+                              .text,
+                          priority: (childControllers['priority']
+                                  as CounterController)
+                              .count,
+                          tag: childControllers['tag'].items,
+                          state: TodoState.values.asNameMap()[
+                              childControllers['state'].text.toLowerCase()]!,
+                          scheduledTime:
+                              childControllers['scheduledTime'].dateTime,
+                          dueTime: childControllers['dueTime'].dateTime,
+                          hasMarkdown: (childControllers['description']
+                                  as TextEditingController)
+                              .text
+                              .isNotEmpty,
+                        );
                         ref.read(todoListProvider.notifier).updateTodos(
-                              TodoModel(
-                                id: uuid,
-                                title: (childControllers['title']
-                                        as TextEditingController)
-                                    .text,
-                                priority: (childControllers['priority']
-                                        as CounterController)
-                                    .count,
-                                tag: childControllers['tag'].items,
-                                state: TodoState.values.asNameMap()[
-                                    childControllers['state']
-                                        .text
-                                        .toLowerCase()]!,
-                                scheduledTime:
-                                    childControllers['scheduledTime'].dateTime,
-                                dueTime: childControllers['dueTime'].dateTime,
-                              ),
+                              todo,
                             );
                         Navigator.pop(context);
                       } else {
@@ -247,6 +254,8 @@ class _TodoDetails extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           TextField(
+            controller:
+                (childControllers['description'] as TextEditingController),
             maxLines: null,
           )
         ],
