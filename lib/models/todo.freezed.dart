@@ -20,22 +20,42 @@ TodoModel _$TodoModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TodoModel {
+  @HiveField(0)
   String get id => throw _privateConstructorUsedError;
+  @HiveField(0)
   set id(String value) => throw _privateConstructorUsedError;
+  @HiveField(1)
   String get title => throw _privateConstructorUsedError;
+  @HiveField(1)
   set title(String value) => throw _privateConstructorUsedError;
+  @HiveField(2)
   int get priority => throw _privateConstructorUsedError;
+  @HiveField(2)
   set priority(int value) => throw _privateConstructorUsedError;
+  @HiveField(3)
   List<String> get tag => throw _privateConstructorUsedError;
+  @HiveField(3)
   set tag(List<String> value) => throw _privateConstructorUsedError;
+  @HiveField(4)
   TodoState get state => throw _privateConstructorUsedError;
+  @HiveField(4)
   set state(TodoState value) => throw _privateConstructorUsedError;
+  @HiveField(5)
   DateTime? get scheduledTime => throw _privateConstructorUsedError;
+  @HiveField(5)
   set scheduledTime(DateTime? value) => throw _privateConstructorUsedError;
+  @HiveField(6)
   DateTime? get dueTime => throw _privateConstructorUsedError;
+  @HiveField(6)
   set dueTime(DateTime? value) => throw _privateConstructorUsedError;
+  @HiveField(7)
   List<String>? get subTasks => throw _privateConstructorUsedError;
+  @HiveField(7)
   set subTasks(List<String>? value) => throw _privateConstructorUsedError;
+  @HiveField(8)
+  bool get hasMarkdown => throw _privateConstructorUsedError;
+  @HiveField(8)
+  set hasMarkdown(bool value) => throw _privateConstructorUsedError;
 
   /// Serializes this TodoModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,14 +73,15 @@ abstract class $TodoModelCopyWith<$Res> {
       _$TodoModelCopyWithImpl<$Res, TodoModel>;
   @useResult
   $Res call(
-      {String id,
-      String title,
-      int priority,
-      List<String> tag,
-      TodoState state,
-      DateTime? scheduledTime,
-      DateTime? dueTime,
-      List<String>? subTasks});
+      {@HiveField(0) String id,
+      @HiveField(1) String title,
+      @HiveField(2) int priority,
+      @HiveField(3) List<String> tag,
+      @HiveField(4) TodoState state,
+      @HiveField(5) DateTime? scheduledTime,
+      @HiveField(6) DateTime? dueTime,
+      @HiveField(7) List<String>? subTasks,
+      @HiveField(8) bool hasMarkdown});
 }
 
 /// @nodoc
@@ -86,6 +107,7 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
     Object? scheduledTime = freezed,
     Object? dueTime = freezed,
     Object? subTasks = freezed,
+    Object? hasMarkdown = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -120,6 +142,10 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
           ? _value.subTasks
           : subTasks // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      hasMarkdown: null == hasMarkdown
+          ? _value.hasMarkdown
+          : hasMarkdown // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -133,14 +159,15 @@ abstract class _$$TodoModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id,
-      String title,
-      int priority,
-      List<String> tag,
-      TodoState state,
-      DateTime? scheduledTime,
-      DateTime? dueTime,
-      List<String>? subTasks});
+      {@HiveField(0) String id,
+      @HiveField(1) String title,
+      @HiveField(2) int priority,
+      @HiveField(3) List<String> tag,
+      @HiveField(4) TodoState state,
+      @HiveField(5) DateTime? scheduledTime,
+      @HiveField(6) DateTime? dueTime,
+      @HiveField(7) List<String>? subTasks,
+      @HiveField(8) bool hasMarkdown});
 }
 
 /// @nodoc
@@ -164,6 +191,7 @@ class __$$TodoModelImplCopyWithImpl<$Res>
     Object? scheduledTime = freezed,
     Object? dueTime = freezed,
     Object? subTasks = freezed,
+    Object? hasMarkdown = null,
   }) {
     return _then(_$TodoModelImpl(
       id: null == id
@@ -198,6 +226,10 @@ class __$$TodoModelImplCopyWithImpl<$Res>
           ? _value.subTasks
           : subTasks // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      hasMarkdown: null == hasMarkdown
+          ? _value.hasMarkdown
+          : hasMarkdown // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -206,41 +238,54 @@ class __$$TodoModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$TodoModelImpl implements _TodoModel {
   _$TodoModelImpl(
-      {required this.id,
-      required this.title,
-      this.priority = 3,
-      this.tag = const [],
-      this.state = TodoState.todo,
-      this.scheduledTime,
-      this.dueTime,
-      this.subTasks});
+      {@HiveField(0) required this.id,
+      @HiveField(1) required this.title,
+      @HiveField(2) this.priority = 3,
+      @HiveField(3) this.tag = const [],
+      @HiveField(4) this.state = TodoState.todo,
+      @HiveField(5) this.scheduledTime,
+      @HiveField(6) this.dueTime,
+      @HiveField(7) this.subTasks,
+      @HiveField(8) this.hasMarkdown = false});
 
   factory _$TodoModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TodoModelImplFromJson(json);
 
   @override
+  @HiveField(0)
   String id;
   @override
+  @HiveField(1)
   String title;
   @override
   @JsonKey()
+  @HiveField(2)
   int priority;
   @override
   @JsonKey()
+  @HiveField(3)
   List<String> tag;
   @override
   @JsonKey()
+  @HiveField(4)
   TodoState state;
   @override
+  @HiveField(5)
   DateTime? scheduledTime;
   @override
+  @HiveField(6)
   DateTime? dueTime;
   @override
+  @HiveField(7)
   List<String>? subTasks;
+  @override
+  @JsonKey()
+  @HiveField(8)
+  bool hasMarkdown;
 
   @override
   String toString() {
-    return 'TodoModel(id: $id, title: $title, priority: $priority, tag: $tag, state: $state, scheduledTime: $scheduledTime, dueTime: $dueTime, subTasks: $subTasks)';
+    return 'TodoModel(id: $id, title: $title, priority: $priority, tag: $tag, state: $state, scheduledTime: $scheduledTime, dueTime: $dueTime, subTasks: $subTasks, hasMarkdown: $hasMarkdown)';
   }
 
   /// Create a copy of TodoModel
@@ -261,42 +306,64 @@ class _$TodoModelImpl implements _TodoModel {
 
 abstract class _TodoModel implements TodoModel {
   factory _TodoModel(
-      {required String id,
-      required String title,
-      int priority,
-      List<String> tag,
-      TodoState state,
-      DateTime? scheduledTime,
-      DateTime? dueTime,
-      List<String>? subTasks}) = _$TodoModelImpl;
+      {@HiveField(0) required String id,
+      @HiveField(1) required String title,
+      @HiveField(2) int priority,
+      @HiveField(3) List<String> tag,
+      @HiveField(4) TodoState state,
+      @HiveField(5) DateTime? scheduledTime,
+      @HiveField(6) DateTime? dueTime,
+      @HiveField(7) List<String>? subTasks,
+      @HiveField(8) bool hasMarkdown}) = _$TodoModelImpl;
 
   factory _TodoModel.fromJson(Map<String, dynamic> json) =
       _$TodoModelImpl.fromJson;
 
   @override
+  @HiveField(0)
   String get id;
+  @HiveField(0)
   set id(String value);
   @override
+  @HiveField(1)
   String get title;
+  @HiveField(1)
   set title(String value);
   @override
+  @HiveField(2)
   int get priority;
+  @HiveField(2)
   set priority(int value);
   @override
+  @HiveField(3)
   List<String> get tag;
+  @HiveField(3)
   set tag(List<String> value);
   @override
+  @HiveField(4)
   TodoState get state;
+  @HiveField(4)
   set state(TodoState value);
   @override
+  @HiveField(5)
   DateTime? get scheduledTime;
+  @HiveField(5)
   set scheduledTime(DateTime? value);
   @override
+  @HiveField(6)
   DateTime? get dueTime;
+  @HiveField(6)
   set dueTime(DateTime? value);
   @override
+  @HiveField(7)
   List<String>? get subTasks;
+  @HiveField(7)
   set subTasks(List<String>? value);
+  @override
+  @HiveField(8)
+  bool get hasMarkdown;
+  @HiveField(8)
+  set hasMarkdown(bool value);
 
   /// Create a copy of TodoModel
   /// with the given fields replaced by the non-null parameter values.

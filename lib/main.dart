@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'screens/todo.dart';
 
 void main() {
+  Hive.initFlutter();
   runApp(const ProviderScope(child: App()));
 }
 
@@ -157,11 +159,11 @@ class _HomeScreenState extends State<HomeScreen> {
         height: MediaQuery.of(context).size.height,
         color: Theme.of(context).focusColor,
         // decoration: BoxDecoration(
-        // 	gradient: LinearGradient(
-        // 		begin: Alignment.topLeft,
-        // 		end: Alignment.bottomRight,
-        // 		colors: [Colors.blueGrey, Colors.blueGrey.withOpacity(0.2)],
-        // 	),
+        //   gradient: LinearGradient(
+        //     begin: Alignment.topLeft,
+        //     end: Alignment.bottomRight,
+        //     colors: [Colors.blueGrey, Colors.blueGrey.withOpacity(0.2)],
+        //   ),
         // ),
       ),
       controller: _advancedDrawerController,
@@ -176,10 +178,10 @@ class _HomeScreenState extends State<HomeScreen> {
         // NOTICE: Uncomment if you want to add shadow behind the page.
         // Keep in mind that it may cause animation jerks.
         // boxShadow: <BoxShadow>[
-        // 	BoxShadow(
-        // 		color: Colors.black12,
-        // 		blurRadius: 1.0,
-        // 	),
+        //   BoxShadow(
+        //     color: Colors.black12,
+        //     blurRadius: 1.0,
+        //   ),
         // ],
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),

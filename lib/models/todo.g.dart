@@ -24,6 +24,7 @@ _$TodoModelImpl _$$TodoModelImplFromJson(Map<String, dynamic> json) =>
       subTasks: (json['subTasks'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      hasMarkdown: json['hasMarkdown'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$TodoModelImplToJson(_$TodoModelImpl instance) =>
@@ -36,6 +37,7 @@ Map<String, dynamic> _$$TodoModelImplToJson(_$TodoModelImpl instance) =>
       'scheduledTime': instance.scheduledTime?.toIso8601String(),
       'dueTime': instance.dueTime?.toIso8601String(),
       'subTasks': instance.subTasks,
+      'hasMarkdown': instance.hasMarkdown,
     };
 
 const _$TodoStateEnumMap = {
