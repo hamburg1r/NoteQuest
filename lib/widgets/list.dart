@@ -74,6 +74,13 @@ class TodoTiles extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(todo.state.name.toUpperCase()),
+                    Text(todo.priority.toString())
+                  ],
+                ),
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //Placeholder(),
