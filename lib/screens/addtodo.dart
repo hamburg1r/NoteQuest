@@ -56,9 +56,6 @@ class _TodoFormState extends ConsumerState<TodoForm> {
   void dispose() {
     for (var controller in childControllers.values) {
       if (controller is TextEditingController) controller.dispose();
-      print('');
-      print(controller);
-      print('');
     }
     super.dispose();
   }
@@ -83,7 +80,6 @@ class _TodoFormState extends ConsumerState<TodoForm> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: modularize this piece of shit
     if (todo != null) {
       (childControllers['title'] as TextEditingController).text = todo!.title;
       (childControllers['tag'] as TagController).items = todo!.tag;
@@ -97,12 +93,13 @@ class _TodoFormState extends ConsumerState<TodoForm> {
           todo!.dueTime;
       if (todo!.hasMarkdown) {
         // TODO: load markdown from saved file
-        (childControllers['subTask'] as TextEditingController).text = '';
+        (childControllers['description'] as TextEditingController).text = '';
       }
     }
 
     //String dropdownValue = 3.toString();
 
+    // TODO: modularize this piece of shit
     return Column(
       children: [
         _TodoDetails(

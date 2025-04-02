@@ -42,7 +42,7 @@ Map<String, dynamic> _$$TodoModelImplToJson(_$TodoModelImpl instance) =>
 
 const _$TodoStateEnumMap = {
   TodoState.todo: 'todo',
-  TodoState.doing: 'doing',
+  TodoState.inprogress: 'inprogress',
   TodoState.done: 'done',
   TodoState.next: 'next',
 };
@@ -51,12 +51,12 @@ const _$TodoStateEnumMap = {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$todoListHash() => r'38189a723a84928b67fd4d99355a9eebfa25f26a';
+String _$todoListHash() => r'f329eca81ad1ecb9c405bbfb61cf9c6ade62c523';
 
 /// See also [TodoList].
 @ProviderFor(TodoList)
 final todoListProvider =
-    AutoDisposeNotifierProvider<TodoList, Map<String, TodoModel>>.internal(
+    AutoDisposeNotifierProvider<TodoList, Map<dynamic, TodoModel>>.internal(
   TodoList.new,
   name: r'todoListProvider',
   debugGetCreateSourceHash:
@@ -65,6 +65,6 @@ final todoListProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$TodoList = AutoDisposeNotifier<Map<String, TodoModel>>;
+typedef _$TodoList = AutoDisposeNotifier<Map<dynamic, TodoModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -7,7 +7,7 @@ part 'todo.g.dart';
 
 enum TodoState {
   todo,
-  doing,
+  inprogress,
   done,
   next,
 }
@@ -31,20 +31,32 @@ class TodoModel with _$TodoModel {
 }
 
 @riverpod
+//Box<TodoModel> todoList(Ref ref) => Hive.box<TodoModel>('todos');
 class TodoList extends _$TodoList {
+  late final _todoBox = Hive.box('todos');
+
+  // FIXME: needs to be future maybe???
   @override
-  Map<String, TodoModel> build() {
-    return <String, TodoModel>{};
+  Map<dynamic, TodoModel> build() {
+    return updateState();
   }
 
   void updateTodos(TodoModel todo) {
-    // TODO: Saving mechanism: priority low
-    state[todo.id.toString()] = todo;
+    _todoBox.put(todo.id, todo.toJson());
+    updateState();
   }
 
   void removeTodo(TodoModel todo) {
     // TODO: Deleting mechanism: priority low
+    _todoBox.delete(todo.id);
+    updateState();
+  }
 
-    //state = List.from(state)..remove(todo);
+  //Future<Map<dynamic, dynamic>> updateState() async {
+  Map<dynamic, TodoModel> updateState() {
+    state = _todoBox.toMap().map((key, value) {
+      return MapEntry(key, TodoModel.fromJson(value));
+    });
+    return state;
   }
 }

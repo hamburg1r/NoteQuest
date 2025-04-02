@@ -12,7 +12,7 @@ class TodoTiles extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final listProvider = ref.watch(todoListProvider);
-    final Map<String, TodoModel> data = listProvider;
+    final Map<dynamic, TodoModel> data = listProvider;
 
     final subtextColor =
         Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(150);
@@ -73,7 +73,6 @@ class TodoTiles extends ConsumerWidget {
               //mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //if (todo.scheduledTime)
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

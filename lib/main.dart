@@ -1,12 +1,22 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:notequest/models/todo.dart';
+import 'package:path_provider/path_provider.dart';
 import 'screens/todo.dart';
 
-void main() {
-  Hive.initFlutter();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var path = await getApplicationDocumentsDirectory();
+  print(path);
+  Hive.init(path.path);
+  Hive.initFlutter(path.path);
+  //Hive.registerAdapter(TodoModel);
+  await Hive.openBox('todos');
   runApp(const ProviderScope(child: App()));
 }
 
