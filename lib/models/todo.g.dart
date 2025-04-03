@@ -42,7 +42,7 @@ Map<String, dynamic> _$$TodoModelImplToJson(_$TodoModelImpl instance) =>
 
 const _$TodoStateEnumMap = {
   TodoState.todo: 'todo',
-  TodoState.inprogress: 'inprogress',
+  TodoState.doing: 'doing',
   TodoState.done: 'done',
   TodoState.next: 'next',
 };
