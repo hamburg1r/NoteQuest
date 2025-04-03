@@ -12,7 +12,7 @@ class TodoTiles extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final listProvider = ref.watch(todoListProvider);
-    final Map<dynamic, TodoModel> data = listProvider;
+    final Map<dynamic, TodoPair> data = listProvider;
 
     final subtextColor =
         Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(150);
@@ -32,7 +32,7 @@ class TodoTiles extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  todo.title,
+                  todo.todo.title,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 MenuAnchor(
@@ -47,7 +47,9 @@ class TodoTiles extends ConsumerWidget {
                     ),
                     MenuItemButton(
                       onPressed: () {
-                        ref.read(todoListProvider.notifier).removeTodo(todo);
+                        ref
+                            .read(todoListProvider.notifier)
+                            .removeTodo(todo.todo);
                         print(ref.watch(todoListProvider));
                       },
                       child: const Text('Delete'),
@@ -76,8 +78,8 @@ class TodoTiles extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(todo.state.name.toUpperCase()),
-                    Text(todo.priority.toString())
+                    Text(todo.todo.state.name.toUpperCase()),
+                    Text(todo.todo.priority.toString())
                   ],
                 ),
                 Row(
@@ -101,7 +103,7 @@ class TodoTiles extends ConsumerWidget {
                     Spacer(),
                     Column(
                       children: [
-                        if (todo.scheduledTime != null)
+                        if (todo.todo.scheduledTime != null)
                           Row(
                             children: [
                               Icon(
@@ -111,13 +113,13 @@ class TodoTiles extends ConsumerWidget {
                               Text(
                                 style: subtextTextStyle,
                                 customDateFormat(
-                                  todo.scheduledTime!,
+                                  todo.todo.scheduledTime!,
                                   true,
                                 ),
                               ),
                             ],
                           ),
-                        if (todo.dueTime != null)
+                        if (todo.todo.dueTime != null)
                           Row(
                             children: [
                               Icon(
@@ -127,7 +129,7 @@ class TodoTiles extends ConsumerWidget {
                               Text(
                                 style: subtextTextStyle,
                                 customDateFormat(
-                                  todo.dueTime!,
+                                  todo.todo.dueTime!,
                                   true,
                                 ),
                               ),
@@ -137,13 +139,13 @@ class TodoTiles extends ConsumerWidget {
                     ),
                   ],
                 ),
-                if (todo.tag.isNotEmpty)
+                if (todo.todo.tag.isNotEmpty)
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       spacing: 5,
                       children: <Widget>[
-                        for (String tag in todo.tag)
+                        for (String tag in todo.todo.tag)
                           InputChip(
                             // TODO: load saved avatar icons: priority low
                             avatar: Container(

@@ -17,6 +17,7 @@ void main() async {
   Hive.initFlutter(path.path);
   //Hive.registerAdapter(TodoModel);
   await Hive.openBox('todos');
+  await Hive.openBox('markdowns');
   runApp(const ProviderScope(child: App()));
 }
 

@@ -42,7 +42,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
     'description': TextEditingController(),
   };
   late final String uuid = widget.id ?? Uuid().v4();
-  late final TodoModel? todo = ref.watch(todoListProvider)[uuid];
+  late final TodoPair? todo = ref.watch(todoListProvider)[uuid];
 
   @override
   void initState() {
@@ -81,19 +81,23 @@ class _TodoFormState extends ConsumerState<TodoForm> {
   @override
   Widget build(BuildContext context) {
     if (todo != null) {
-      (childControllers['title'] as TextEditingController).text = todo!.title;
-      (childControllers['tag'] as TagController).items = todo!.tag;
+      TodoModel todoModel = todo!.todo;
+      String? markdown = todo!.description;
+      (childControllers['title'] as TextEditingController).text =
+          todoModel.title;
+      (childControllers['tag'] as TagController).items = todoModel.tag;
       (childControllers['priority'] as CounterController).count =
-          todo!.priority;
+          todoModel.priority;
       (childControllers['state'] as TextEditingController).text =
-          todo!.state.name;
+          todoModel.state.name;
       (childControllers['scheduledTime'] as DateTimePickerController).dateTime =
-          todo!.scheduledTime;
+          todoModel.scheduledTime;
       (childControllers['dueTime'] as DateTimePickerController).dateTime =
-          todo!.dueTime;
-      if (todo!.hasMarkdown) {
+          todoModel.dueTime;
+      if (todoModel.hasMarkdown) {
         // TODO: load markdown from saved file
-        (childControllers['description'] as TextEditingController).text = '';
+        (childControllers['description'] as TextEditingController).text =
+            markdown!;
       }
     }
 
@@ -143,16 +147,21 @@ class _TodoFormState extends ConsumerState<TodoForm> {
                               .text
                               .isNotEmpty,
                         );
-                        ref.read(todoListProvider.notifier).updateTodos(
-                              todo,
-                            );
+                        String? markdown = (childControllers['description']
+                                as TextEditingController)
+                            .text;
+                        if (markdown == '') {
+                          markdown = null;
+                        }
+                        ref
+                            .read(todoListProvider.notifier)
+                            .updateTodos(todo, markdown);
                         Navigator.pop(context);
                       } else {
                         ref
                             .read(errorMessageProvider.notifier)
                             .setMessage("This field cannot be empty");
                       }
-                      print(ref.watch(todoListProvider));
                     },
                     child: Text("save"),
                   );
