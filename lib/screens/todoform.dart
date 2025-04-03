@@ -8,7 +8,7 @@ import 'package:notequest/widgets/inputchip.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-part 'addtodo.g.dart';
+part 'todoform.g.dart';
 
 Future<void> todoFormPage(context, {id}) => Navigator.push(
       context,
