@@ -22,7 +22,7 @@ class TodoModel with _$TodoModel {
     @Default(TodoState.todo) TodoState state,
     DateTime? scheduledTime,
     DateTime? dueTime,
-    List<String>? subTasks,
+    @Default([]) List<String> subTasks,
     @Default(false) bool hasMarkdown,
   }) = _TodoModel;
 

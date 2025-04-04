@@ -22,8 +22,9 @@ _$TodoModelImpl _$$TodoModelImplFromJson(Map<String, dynamic> json) =>
           ? null
           : DateTime.parse(json['dueTime'] as String),
       subTasks: (json['subTasks'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       hasMarkdown: json['hasMarkdown'] as bool? ?? false,
     );
 

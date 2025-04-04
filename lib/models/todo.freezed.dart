@@ -34,8 +34,8 @@ mixin _$TodoModel {
   set scheduledTime(DateTime? value) => throw _privateConstructorUsedError;
   DateTime? get dueTime => throw _privateConstructorUsedError;
   set dueTime(DateTime? value) => throw _privateConstructorUsedError;
-  List<String>? get subTasks => throw _privateConstructorUsedError;
-  set subTasks(List<String>? value) => throw _privateConstructorUsedError;
+  List<String> get subTasks => throw _privateConstructorUsedError;
+  set subTasks(List<String> value) => throw _privateConstructorUsedError;
   bool get hasMarkdown => throw _privateConstructorUsedError;
   set hasMarkdown(bool value) => throw _privateConstructorUsedError;
 
@@ -62,7 +62,7 @@ abstract class $TodoModelCopyWith<$Res> {
       TodoState state,
       DateTime? scheduledTime,
       DateTime? dueTime,
-      List<String>? subTasks,
+      List<String> subTasks,
       bool hasMarkdown});
 }
 
@@ -88,7 +88,7 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
     Object? state = null,
     Object? scheduledTime = freezed,
     Object? dueTime = freezed,
-    Object? subTasks = freezed,
+    Object? subTasks = null,
     Object? hasMarkdown = null,
   }) {
     return _then(_value.copyWith(
@@ -120,10 +120,10 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
           ? _value.dueTime
           : dueTime // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      subTasks: freezed == subTasks
+      subTasks: null == subTasks
           ? _value.subTasks
           : subTasks // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
+              as List<String>,
       hasMarkdown: null == hasMarkdown
           ? _value.hasMarkdown
           : hasMarkdown // ignore: cast_nullable_to_non_nullable
@@ -148,7 +148,7 @@ abstract class _$$TodoModelImplCopyWith<$Res>
       TodoState state,
       DateTime? scheduledTime,
       DateTime? dueTime,
-      List<String>? subTasks,
+      List<String> subTasks,
       bool hasMarkdown});
 }
 
@@ -172,7 +172,7 @@ class __$$TodoModelImplCopyWithImpl<$Res>
     Object? state = null,
     Object? scheduledTime = freezed,
     Object? dueTime = freezed,
-    Object? subTasks = freezed,
+    Object? subTasks = null,
     Object? hasMarkdown = null,
   }) {
     return _then(_$TodoModelImpl(
@@ -204,10 +204,10 @@ class __$$TodoModelImplCopyWithImpl<$Res>
           ? _value.dueTime
           : dueTime // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      subTasks: freezed == subTasks
+      subTasks: null == subTasks
           ? _value.subTasks
           : subTasks // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
+              as List<String>,
       hasMarkdown: null == hasMarkdown
           ? _value.hasMarkdown
           : hasMarkdown // ignore: cast_nullable_to_non_nullable
@@ -227,7 +227,7 @@ class _$TodoModelImpl implements _TodoModel {
       this.state = TodoState.todo,
       this.scheduledTime,
       this.dueTime,
-      this.subTasks,
+      this.subTasks = const [],
       this.hasMarkdown = false});
 
   factory _$TodoModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -251,7 +251,8 @@ class _$TodoModelImpl implements _TodoModel {
   @override
   DateTime? dueTime;
   @override
-  List<String>? subTasks;
+  @JsonKey()
+  List<String> subTasks;
   @override
   @JsonKey()
   bool hasMarkdown;
@@ -286,7 +287,7 @@ abstract class _TodoModel implements TodoModel {
       TodoState state,
       DateTime? scheduledTime,
       DateTime? dueTime,
-      List<String>? subTasks,
+      List<String> subTasks,
       bool hasMarkdown}) = _$TodoModelImpl;
 
   factory _TodoModel.fromJson(Map<String, dynamic> json) =
@@ -314,8 +315,8 @@ abstract class _TodoModel implements TodoModel {
   DateTime? get dueTime;
   set dueTime(DateTime? value);
   @override
-  List<String>? get subTasks;
-  set subTasks(List<String>? value);
+  List<String> get subTasks;
+  set subTasks(List<String> value);
   @override
   bool get hasMarkdown;
   set hasMarkdown(bool value);
