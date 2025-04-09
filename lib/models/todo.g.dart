@@ -10,7 +10,8 @@ _$TodoModelImpl _$$TodoModelImplFromJson(Map<String, dynamic> json) =>
     _$TodoModelImpl(
       id: json['id'] as String,
       title: json['title'] as String,
-      priority: (json['priority'] as num?)?.toInt() ?? 3,
+      priority: $enumDecodeNullable(_$TodoPriorityEnumMap, json['priority']) ??
+          TodoPriority.low,
       tag: (json['tag'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           const [],
       state: $enumDecodeNullable(_$TodoStateEnumMap, json['state']) ??
@@ -25,6 +26,10 @@ _$TodoModelImpl _$$TodoModelImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      parents: (json['parents'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       hasMarkdown: json['hasMarkdown'] as bool? ?? false,
     );
 
@@ -32,14 +37,22 @@ Map<String, dynamic> _$$TodoModelImplToJson(_$TodoModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'priority': instance.priority,
+      'priority': _$TodoPriorityEnumMap[instance.priority]!,
       'tag': instance.tag,
       'state': _$TodoStateEnumMap[instance.state]!,
       'scheduledTime': instance.scheduledTime?.toIso8601String(),
       'dueTime': instance.dueTime?.toIso8601String(),
       'subTasks': instance.subTasks,
+      'parents': instance.parents,
       'hasMarkdown': instance.hasMarkdown,
     };
+
+const _$TodoPriorityEnumMap = {
+  TodoPriority.low: 'low',
+  TodoPriority.medium: 'medium',
+  TodoPriority.high: 'high',
+  TodoPriority.urgent: 'urgent',
+};
 
 const _$TodoStateEnumMap = {
   TodoState.todo: 'todo',
@@ -52,12 +65,12 @@ const _$TodoStateEnumMap = {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$todoListHash() => r'008a318b61c0f65c6b41a6b295713cdd5927bccb';
+String _$todoListHash() => r'27192884917ace62ebc53231679cc045af737eaf';
 
 /// See also [TodoList].
 @ProviderFor(TodoList)
 final todoListProvider =
-    AutoDisposeNotifierProvider<TodoList, Map<dynamic, TodoPair>>.internal(
+    AutoDisposeNotifierProvider<TodoList, Map<String, TodoPair>>.internal(
   TodoList.new,
   name: r'todoListProvider',
   debugGetCreateSourceHash:
@@ -66,6 +79,22 @@ final todoListProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$TodoList = AutoDisposeNotifier<Map<dynamic, TodoPair>>;
+typedef _$TodoList = AutoDisposeNotifier<Map<String, TodoPair>>;
+String _$todoMainScreenHash() => r'b8ed95ad21b8a35ef6de2067de2553a4415395ce';
+
+/// See also [TodoMainScreen].
+@ProviderFor(TodoMainScreen)
+final todoMainScreenProvider = AutoDisposeNotifierProvider<TodoMainScreen,
+    Map<String, List<String>>>.internal(
+  TodoMainScreen.new,
+  name: r'todoMainScreenProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$todoMainScreenHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$TodoMainScreen = AutoDisposeNotifier<Map<String, List<String>>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -24,8 +24,8 @@ mixin _$TodoModel {
   set id(String value) => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   set title(String value) => throw _privateConstructorUsedError;
-  int get priority => throw _privateConstructorUsedError;
-  set priority(int value) => throw _privateConstructorUsedError;
+  TodoPriority get priority => throw _privateConstructorUsedError;
+  set priority(TodoPriority value) => throw _privateConstructorUsedError;
   List<String> get tag => throw _privateConstructorUsedError;
   set tag(List<String> value) => throw _privateConstructorUsedError;
   TodoState get state => throw _privateConstructorUsedError;
@@ -36,6 +36,8 @@ mixin _$TodoModel {
   set dueTime(DateTime? value) => throw _privateConstructorUsedError;
   List<String> get subTasks => throw _privateConstructorUsedError;
   set subTasks(List<String> value) => throw _privateConstructorUsedError;
+  List<String> get parents => throw _privateConstructorUsedError;
+  set parents(List<String> value) => throw _privateConstructorUsedError;
   bool get hasMarkdown => throw _privateConstructorUsedError;
   set hasMarkdown(bool value) => throw _privateConstructorUsedError;
 
@@ -57,12 +59,13 @@ abstract class $TodoModelCopyWith<$Res> {
   $Res call(
       {String id,
       String title,
-      int priority,
+      TodoPriority priority,
       List<String> tag,
       TodoState state,
       DateTime? scheduledTime,
       DateTime? dueTime,
       List<String> subTasks,
+      List<String> parents,
       bool hasMarkdown});
 }
 
@@ -89,6 +92,7 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
     Object? scheduledTime = freezed,
     Object? dueTime = freezed,
     Object? subTasks = null,
+    Object? parents = null,
     Object? hasMarkdown = null,
   }) {
     return _then(_value.copyWith(
@@ -103,7 +107,7 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
       priority: null == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
-              as int,
+              as TodoPriority,
       tag: null == tag
           ? _value.tag
           : tag // ignore: cast_nullable_to_non_nullable
@@ -124,6 +128,10 @@ class _$TodoModelCopyWithImpl<$Res, $Val extends TodoModel>
           ? _value.subTasks
           : subTasks // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      parents: null == parents
+          ? _value.parents
+          : parents // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       hasMarkdown: null == hasMarkdown
           ? _value.hasMarkdown
           : hasMarkdown // ignore: cast_nullable_to_non_nullable
@@ -143,12 +151,13 @@ abstract class _$$TodoModelImplCopyWith<$Res>
   $Res call(
       {String id,
       String title,
-      int priority,
+      TodoPriority priority,
       List<String> tag,
       TodoState state,
       DateTime? scheduledTime,
       DateTime? dueTime,
       List<String> subTasks,
+      List<String> parents,
       bool hasMarkdown});
 }
 
@@ -173,6 +182,7 @@ class __$$TodoModelImplCopyWithImpl<$Res>
     Object? scheduledTime = freezed,
     Object? dueTime = freezed,
     Object? subTasks = null,
+    Object? parents = null,
     Object? hasMarkdown = null,
   }) {
     return _then(_$TodoModelImpl(
@@ -187,7 +197,7 @@ class __$$TodoModelImplCopyWithImpl<$Res>
       priority: null == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
-              as int,
+              as TodoPriority,
       tag: null == tag
           ? _value.tag
           : tag // ignore: cast_nullable_to_non_nullable
@@ -208,6 +218,10 @@ class __$$TodoModelImplCopyWithImpl<$Res>
           ? _value.subTasks
           : subTasks // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      parents: null == parents
+          ? _value.parents
+          : parents // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       hasMarkdown: null == hasMarkdown
           ? _value.hasMarkdown
           : hasMarkdown // ignore: cast_nullable_to_non_nullable
@@ -218,16 +232,17 @@ class __$$TodoModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$TodoModelImpl implements _TodoModel {
+class _$TodoModelImpl with DiagnosticableTreeMixin implements _TodoModel {
   _$TodoModelImpl(
       {required this.id,
       required this.title,
-      this.priority = 3,
+      this.priority = TodoPriority.low,
       this.tag = const [],
       this.state = TodoState.todo,
       this.scheduledTime,
       this.dueTime,
       this.subTasks = const [],
+      this.parents = const [],
       this.hasMarkdown = false});
 
   factory _$TodoModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -239,7 +254,7 @@ class _$TodoModelImpl implements _TodoModel {
   String title;
   @override
   @JsonKey()
-  int priority;
+  TodoPriority priority;
   @override
   @JsonKey()
   List<String> tag;
@@ -255,11 +270,31 @@ class _$TodoModelImpl implements _TodoModel {
   List<String> subTasks;
   @override
   @JsonKey()
+  List<String> parents;
+  @override
+  @JsonKey()
   bool hasMarkdown;
 
   @override
-  String toString() {
-    return 'TodoModel(id: $id, title: $title, priority: $priority, tag: $tag, state: $state, scheduledTime: $scheduledTime, dueTime: $dueTime, subTasks: $subTasks, hasMarkdown: $hasMarkdown)';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'TodoModel(id: $id, title: $title, priority: $priority, tag: $tag, state: $state, scheduledTime: $scheduledTime, dueTime: $dueTime, subTasks: $subTasks, parents: $parents, hasMarkdown: $hasMarkdown)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'TodoModel'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('title', title))
+      ..add(DiagnosticsProperty('priority', priority))
+      ..add(DiagnosticsProperty('tag', tag))
+      ..add(DiagnosticsProperty('state', state))
+      ..add(DiagnosticsProperty('scheduledTime', scheduledTime))
+      ..add(DiagnosticsProperty('dueTime', dueTime))
+      ..add(DiagnosticsProperty('subTasks', subTasks))
+      ..add(DiagnosticsProperty('parents', parents))
+      ..add(DiagnosticsProperty('hasMarkdown', hasMarkdown));
   }
 
   /// Create a copy of TodoModel
@@ -282,12 +317,13 @@ abstract class _TodoModel implements TodoModel {
   factory _TodoModel(
       {required String id,
       required String title,
-      int priority,
+      TodoPriority priority,
       List<String> tag,
       TodoState state,
       DateTime? scheduledTime,
       DateTime? dueTime,
       List<String> subTasks,
+      List<String> parents,
       bool hasMarkdown}) = _$TodoModelImpl;
 
   factory _TodoModel.fromJson(Map<String, dynamic> json) =
@@ -300,8 +336,8 @@ abstract class _TodoModel implements TodoModel {
   String get title;
   set title(String value);
   @override
-  int get priority;
-  set priority(int value);
+  TodoPriority get priority;
+  set priority(TodoPriority value);
   @override
   List<String> get tag;
   set tag(List<String> value);
@@ -317,6 +353,9 @@ abstract class _TodoModel implements TodoModel {
   @override
   List<String> get subTasks;
   set subTasks(List<String> value);
+  @override
+  List<String> get parents;
+  set parents(List<String> value);
   @override
   bool get hasMarkdown;
   set hasMarkdown(bool value);

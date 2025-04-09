@@ -1,13 +1,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class InputWithChips extends StatefulWidget {
-  const InputWithChips({required this.label, this.controller, super.key});
+  const InputWithChips({
+    required this.label,
+    this.controller,
+    super.key,
+    this.logger,
+  });
 
   final String label;
   // This was useless ;-;
   final TagController? controller;
+  final Logger? logger;
 
   @override
   State<InputWithChips> createState() => _InputWithChipsState();
@@ -15,6 +22,7 @@ class InputWithChips extends StatefulWidget {
 
 class _InputWithChipsState extends State<InputWithChips> {
   late TextEditingController _controller;
+  late final Logger? logger = widget.logger;
   Map<String, Widget> chips = {};
 
   @override
@@ -40,7 +48,7 @@ class _InputWithChipsState extends State<InputWithChips> {
       for (var i = 0; i <= text.length - 1; i++) {
         createChip(text[i]);
       }
-      print("Recieved $text, length: ${text.length}");
+      logger?.i("Recieved $text, length: ${text.length}");
     }
   }
 
@@ -54,15 +62,16 @@ class _InputWithChipsState extends State<InputWithChips> {
     );
 
     if (text != '') {
+      logger?.i('Creating chips: $text');
       setState(() {
-        print('From create chip: $text');
         chips[text] = InputChip(
-            label: Text(text),
-            avatar: avatarIcon,
-            onDeleted: () => setState(() {
-                  chips.remove(text);
-                  updateController();
-                }));
+          label: Text(text),
+          avatar: avatarIcon,
+          onDeleted: () => setState(() {
+            chips.remove(text);
+            updateController();
+          }),
+        );
         updateController();
       });
     }
@@ -70,11 +79,12 @@ class _InputWithChipsState extends State<InputWithChips> {
 
   void updateController() {
     widget.controller?.items = chips.keys.toList();
-    print("updated TagController: ${widget.controller?.items}");
+    logger?.i("Updated TagController: ${widget.controller?.items}");
   }
 
   @override
   Widget build(BuildContext context) {
+    logger?.t('InputWithChips build called');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

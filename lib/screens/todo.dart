@@ -1,15 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:notequest/models/todo.dart';
 import 'package:notequest/screens/todoform.dart';
 import '../widgets/list.dart';
 
 class Todo extends ConsumerWidget {
   final Function(Text) appbar;
-  const Todo(this.appbar, {super.key});
+  final Logger? logger;
+  const Todo(
+    this.appbar, {
+    super.key,
+    this.logger,
+  });
+
+  // FIXME: Future?
+  Map<String, TodoPair>? getTodos(WidgetRef ref, String type) {
+    List<String> todoIds = ref.watch(todoMainScreenProvider)[type] ?? [];
+    logger?.i('todoIds recieved: $todoIds');
+    Map<String, TodoPair> todoList = ref.watch(todoListProvider);
+    logger?.t('retrived all todos');
+    Map<String, TodoPair> out = {};
+    for (String id in todoIds) {
+      out[id] = todoList[id]!;
+    }
+    if (out.isEmpty) return null;
+    logger?.d('Got todos for type: $type');
+    logger?.i(out);
+    return out;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    logger?.t('Running Todo build method');
     return Scaffold(
       appBar: appbar(Text('Todo')),
       body: TodoTiles(
@@ -22,17 +45,19 @@ class Todo extends ConsumerWidget {
           ),
         ),
         menu: (TodoPair todo) {
+          logger?.t('Creating menu button for todo list items');
           return MenuAnchor(
             menuChildren: [
               MenuItemButton(
                 onPressed: () {
-                  //ref.read(todoListProvider.notifier).removeTodo(todo);
+                  logger?.d('Editing ${todo.todo.id}');
                   todoFormPage(context, id: todo.todo.id);
                 },
                 child: const Text('Edit'),
               ),
               MenuItemButton(
                 onPressed: () {
+                  logger?.d('Deleting ${todo.todo.id}');
                   ref.read(todoListProvider.notifier).removeTodo(todo.todo);
                 },
                 child: const Text('Delete'),
@@ -42,6 +67,7 @@ class Todo extends ConsumerWidget {
               return IconButton(
                 //focusNode: _buttonFocusNode,
                 onPressed: () {
+                  logger?.t('Menu button pressed for: ${todo.todo.id}');
                   if (controller.isOpen) {
                     controller.close();
                   } else {
@@ -53,6 +79,9 @@ class Todo extends ConsumerWidget {
             },
           );
         },
+        pinned: getTodos(ref, 'pinned'),
+        nonPinned: getTodos(ref, 'main'),
+        logger: logger,
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
@@ -62,7 +91,10 @@ class Todo extends ConsumerWidget {
         //	isScrollControlled: true,
         //	builder: (ctx) => AddTodo()
         //),
-        onPressed: () => todoFormPage(context),
+        onPressed: () {
+          logger?.t('Calling todoFormPage for adding new todo');
+          todoFormPage(context);
+        },
         child: Icon(Icons.add),
       ),
     );

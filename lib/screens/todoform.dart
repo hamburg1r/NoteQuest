@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:notequest/models/todo.dart';
-import 'package:notequest/widgets/counter.dart';
 import 'package:notequest/widgets/date_time_picker.dart';
 import 'package:notequest/widgets/inputchip.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,9 +23,17 @@ Future<void> todoFormPage(context, {id}) => Navigator.push(
     );
 
 class TodoForm extends ConsumerStatefulWidget {
-  const TodoForm({this.id, super.key});
+  const TodoForm({
+    this.id,
+    this.parent,
+    super.key,
+    this.logger,
+  });
 
   final String? id;
+  final TodoModel? parent;
+
+  final Logger? logger;
 
   @override
   ConsumerState<TodoForm> createState() => _TodoFormState();
@@ -35,7 +43,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
   final Map<String, dynamic> childControllers = {
     'title': TextEditingController(),
     'tag': TagController(),
-    'priority': CounterController(initialValue: 3),
+    'priority': TextEditingController(),
     'state': TextEditingController(),
     'scheduledTime': DateTimePickerController(),
     'dueTime': DateTimePickerController(),
@@ -43,6 +51,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
   };
   late final String uuid = widget.id ?? Uuid().v4();
   late final TodoPair? todo = ref.watch(todoListProvider)[uuid];
+  late final Logger? logger = widget.logger;
 
   @override
   void initState() {
@@ -56,10 +65,12 @@ class _TodoFormState extends ConsumerState<TodoForm> {
   void dispose() {
     for (var controller in childControllers.values) {
       if (controller is TextEditingController) controller.dispose();
+      logger?.d('Disposing controllers: $controller');
     }
     super.dispose();
   }
 
+  // FIXME: remove this unused function
   Widget inputBox(String label, {bool autofocus = false}) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
@@ -86,8 +97,8 @@ class _TodoFormState extends ConsumerState<TodoForm> {
       (childControllers['title'] as TextEditingController).text =
           todoModel.title;
       (childControllers['tag'] as TagController).items = todoModel.tag;
-      (childControllers['priority'] as CounterController).count =
-          todoModel.priority;
+      (childControllers['priority'] as TextEditingController).text =
+          todoModel.priority.name;
       (childControllers['state'] as TextEditingController).text =
           todoModel.state.name;
       (childControllers['scheduledTime'] as DateTimePickerController).dateTime =
@@ -108,6 +119,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
       children: [
         _TodoDetails(
           childControllers: childControllers,
+          logger: logger,
         ),
         SizedBox(height: 7),
         Padding(
@@ -117,55 +129,61 @@ class _TodoFormState extends ConsumerState<TodoForm> {
             children: [
               OutlinedButton(
                 onPressed: () {
+                  logger?.d('Canceled adding todos');
                   Navigator.pop(context);
                 },
                 child: Text("cancel"),
               ),
-              Consumer(
-                builder: (context, ref, child) {
-                  return FilledButton(
-                    onPressed: () {
-                      if ((childControllers['title'] as TextEditingController)
-                          .text
-                          .isNotEmpty) {
-                        var todo = TodoModel(
-                          id: uuid,
-                          title: (childControllers['title']
-                                  as TextEditingController)
+              FilledButton(
+                onPressed: () {
+                  if ((childControllers['title'] as TextEditingController)
+                      .text
+                      .isNotEmpty) {
+                    var todo = TodoModel(
+                      id: uuid,
+                      title:
+                          (childControllers['title'] as TextEditingController)
                               .text,
-                          priority: (childControllers['priority']
-                                  as CounterController)
-                              .count,
-                          tag: childControllers['tag'].items,
-                          state: TodoState.values.asNameMap()[
-                              childControllers['state'].text.toLowerCase()]!,
-                          scheduledTime:
-                              childControllers['scheduledTime'].dateTime,
-                          dueTime: childControllers['dueTime'].dateTime,
-                          hasMarkdown: (childControllers['description']
+                      priority: TodoPriority.values.asNameMap()[
+                          (childControllers['priority']
                                   as TextEditingController)
                               .text
-                              .isNotEmpty,
+                              .toLowerCase()]!,
+                      tag: (childControllers['tag'] as TagController).items,
+                      state: TodoState.values.asNameMap()[
+                          (childControllers['state'] as TextEditingController)
+                              .text
+                              .toLowerCase()]!,
+                      scheduledTime: (childControllers['scheduledTime']
+                              as DateTimePickerController)
+                          .dateTime,
+                      dueTime: (childControllers['dueTime']
+                              as DateTimePickerController)
+                          .dateTime,
+                      hasMarkdown: (childControllers['description']
+                              as TextEditingController)
+                          .text
+                          .isNotEmpty,
+                    );
+                    String? markdown = (childControllers['description']
+                            as TextEditingController)
+                        .text;
+                    if (markdown == '') {
+                      markdown = null;
+                    }
+                    ref.read(todoListProvider.notifier).addTodo(
+                          todo,
+                          markdown: markdown,
+                          parent: widget.parent,
                         );
-                        String? markdown = (childControllers['description']
-                                as TextEditingController)
-                            .text;
-                        if (markdown == '') {
-                          markdown = null;
-                        }
-                        ref
-                            .read(todoListProvider.notifier)
-                            .updateTodos(todo, markdown);
-                        Navigator.pop(context);
-                      } else {
-                        ref
-                            .read(errorMessageProvider.notifier)
-                            .setMessage("This field cannot be empty");
-                      }
-                    },
-                    child: Text("save"),
-                  );
+                    Navigator.pop(context);
+                  } else {
+                    ref
+                        .read(errorMessageProvider.notifier)
+                        .setMessage("This field cannot be empty");
+                  }
                 },
+                child: Text("save"),
               ),
             ],
           ),
@@ -180,12 +198,15 @@ class _TodoDetails extends ConsumerWidget {
     required this.childControllers,
     // ignore: unused_element
     super.key,
+    this.logger,
   });
 
   final Map<String, dynamic> childControllers;
+  final Logger? logger;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    logger?.t('building todo details');
     final errorText = ref.watch(errorMessageProvider);
     final EdgeInsets padding = const EdgeInsets.all(4.0);
     return Expanded(
@@ -223,7 +244,7 @@ class _TodoDetails extends ConsumerWidget {
                 DropdownMenu(
                   controller: childControllers['state'],
                   initialSelection: TodoState.todo,
-                  width: MediaQuery.of(context).size.width / 2,
+                  // width: MediaQuery.of(context).size.width / 2,
                   dropdownMenuEntries: <DropdownMenuEntry<TodoState>>[
                     for (var value in TodoState.values)
                       DropdownMenuEntry(
@@ -232,8 +253,23 @@ class _TodoDetails extends ConsumerWidget {
                       ),
                   ],
                 ),
-                Counter(
+                DropdownMenu(
                   controller: childControllers['priority'],
+                  initialSelection: TodoPriority.low,
+                  // width: MediaQuery.of(context).size.width / 2,
+                  dropdownMenuEntries: <DropdownMenuEntry<TodoPriority>>[
+                    for (var value in TodoPriority.values)
+                      DropdownMenuEntry(
+                        value: value,
+                        label: value.name.toUpperCase(),
+                        leadingIcon: Container(
+                          decoration: BoxDecoration(
+                            color: value.color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),

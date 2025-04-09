@@ -2,59 +2,78 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:nil/nil.dart';
-import 'package:notequest/screens/todoform.dart';
 import 'package:notequest/utils.dart';
 
 import '../models/todo.dart';
 
 class TodoTiles extends ConsumerWidget {
-  final Map<dynamic, TodoPair>? data;
+  final Map<String, TodoPair>? pinned;
+  final Map<String, TodoPair>? nonPinned;
   final Widget leading;
   final Widget whenEmpty;
   final Widget trailing;
   final Function(TodoPair)? menu;
+
+  final Logger? logger;
+
   const TodoTiles({
-    this.data,
+    this.pinned,
+    this.nonPinned,
     this.leading = nil,
     this.whenEmpty = nil,
     this.trailing = nil,
     this.menu,
     super.key,
+    this.logger,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (data?.isNotEmpty ?? false) {
-      return ListView.separated(
-        itemCount: data!.length,
-        itemBuilder: (BuildContext context, int index) {
-          print(index);
-          String id = data!.keys.toList()[index];
-          TodoPair todoPair = data![id]!;
-          return ListTile(
-            leading: Text((index).toString()),
-            title: Row(
-              //crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  todoPair.todo.title,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                if (menu != null) menu!(todoPair),
-              ],
-            ),
-            subtitle: _TodoDetails(
-              todo: todoPair,
-            ),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => Divider(),
-      );
-    } else {
+    logger?.t('Running TodoTiles build method');
+    if ((pinned?.isEmpty ?? true) && (nonPinned?.isEmpty ?? true)) {
+      logger?.d('No data available for building the list');
       return whenEmpty;
     }
+    // FIXME: Use slivers?
+    return todoList(nonPinned!);
+    // return Column(
+    //   children: [
+    //     if (pinned?.isNotEmpty ?? false) todoList(pinned!),
+    //     if (nonPinned?.isNotEmpty ?? false) todoList(nonPinned!),
+    //   ],
+    // );
+  }
+
+  ListView todoList(Map<String, TodoPair> todos) {
+    List<String> todoList = todos.keys.toList();
+    logger?.t('Building todoList');
+    logger?.i(todos);
+    return ListView.separated(
+      itemCount: todos.length,
+      itemBuilder: (BuildContext context, int index) {
+        String id = todoList[index];
+        TodoPair todoPair = todos[id]!;
+        return ListTile(
+          leading: Text((index).toString()),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                todoPair.todo.title,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              if (menu != null) menu!(todoPair),
+            ],
+          ),
+          subtitle: _TodoDetails(
+            todo: todoPair,
+          ),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => Divider(),
+    );
   }
 }
 

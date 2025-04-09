@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class DateTimePicker extends StatefulWidget {
-  const DateTimePicker(
-      {this.controller, this.label = "Select Date and Time", super.key});
+  const DateTimePicker({
+    this.controller,
+    this.label = "Select Date and Time",
+    super.key,
+    this.logger,
+  });
 
+  final Logger? logger;
   final DateTimePickerController? controller;
   final String label;
 
@@ -13,6 +19,8 @@ class DateTimePicker extends StatefulWidget {
 
 class _DateTimePickerState extends State<DateTimePicker> {
   late final DateTimePickerController controller;
+  late final Logger? logger = widget.logger;
+
   @override
   void initState() {
     super.initState();
@@ -21,6 +29,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
   @override
   Widget build(BuildContext context) {
+    logger?.t('Date time picker build method called');
     return FilledButton.tonal(
       onPressed: () {
         showDialog(
