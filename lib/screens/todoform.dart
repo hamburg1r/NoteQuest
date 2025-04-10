@@ -147,13 +147,11 @@ class _TodoFormState extends ConsumerState<TodoForm> {
                       priority: TodoPriority.values.asNameMap()[
                           (childControllers['priority']
                                   as TextEditingController)
-                              .text
-                              .toLowerCase()]!,
+                              .text]!,
                       tag: (childControllers['tag'] as TagController).items,
                       state: TodoState.values.asNameMap()[
                           (childControllers['state'] as TextEditingController)
-                              .text
-                              .toLowerCase()]!,
+                              .text]!,
                       scheduledTime: (childControllers['scheduledTime']
                               as DateTimePickerController)
                           .dateTime,
