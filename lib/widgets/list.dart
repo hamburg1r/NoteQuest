@@ -36,14 +36,29 @@ class TodoTiles extends ConsumerWidget {
       logger?.d('No data available for building the list');
       return whenEmpty;
     }
-    // FIXME: Use slivers?
-    return todoList(nonPinned!);
-    // return Column(
-    //   children: [
-    //     if (pinned?.isNotEmpty ?? false) todoList(pinned!),
-    //     if (nonPinned?.isNotEmpty ?? false) todoList(nonPinned!),
-    //   ],
-    // );
+    return CustomScrollView(
+      slivers: [
+        SliverList(
+          delegate: SliverChildListDelegate.fixed([
+            if (pinned?.isNotEmpty ?? false) ...[
+              Text(
+                'Pinned:',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              todoList(pinned!),
+            ],
+            if (nonPinned?.isNotEmpty ?? false) ...[
+              if (pinned?.isNotEmpty ?? false)
+                Text(
+                  'Unpinned:',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              todoList(nonPinned!),
+            ],
+          ]),
+        ),
+      ],
+    );
   }
 
   ListView todoList(Map<String, TodoPair> todos) {
@@ -52,6 +67,7 @@ class TodoTiles extends ConsumerWidget {
     logger?.i(todos);
     return ListView.separated(
       itemCount: todos.length,
+      shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         String id = todoList[index];
         TodoPair todoPair = todos[id]!;

@@ -21,7 +21,9 @@ class Todo extends ConsumerWidget {
     Map<String, TodoPair> todoList = ref.watch(todoListProvider);
     logger?.t('retrived all todos');
     Map<String, TodoPair> out = {};
+    logger?.i('$todoList');
     for (String id in todoIds) {
+      logger?.i('checking for $id got:${todoList[id].toString()}');
       out[id] = todoList[id]!;
     }
     if (out.isEmpty) return null;
