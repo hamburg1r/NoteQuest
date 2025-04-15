@@ -85,6 +85,7 @@ class TodoTiles extends ConsumerWidget {
           ),
           subtitle: _TodoDetails(
             todo: todoPair,
+            logger: logger,
           ),
         );
       },
@@ -98,9 +99,11 @@ class _TodoDetails extends StatelessWidget {
     // ignore: unused_element
     super.key,
     required this.todo,
+    this.logger,
   });
 
   final TodoPair todo;
+  final Logger? logger;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +111,8 @@ class _TodoDetails extends StatelessWidget {
         Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(150);
     final subtextTextStyle =
         Theme.of(context).textTheme.labelSmall!.copyWith(color: subtextColor);
+
+    logger?.i(Theme.of(context).textTheme.labelSmall?.fontSize);
 
     return Column(
       //mainAxisAlignment: MainAxisAlignment.start,
@@ -117,7 +122,21 @@ class _TodoDetails extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(todo.todo.state.name.toUpperCase()),
-            Text(todo.todo.priority.toString())
+            Row(
+              children: [
+                Container(
+                  height: Theme.of(context).textTheme.bodySmall?.fontSize,
+                  width: Theme.of(context).textTheme.bodySmall?.fontSize,
+                  // height: 20,
+                  // width: 20,
+                  decoration: BoxDecoration(
+                    color: todo.todo.priority.color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Text(todo.todo.priority.toString()),
+              ],
+            )
           ],
         ),
         Row(
