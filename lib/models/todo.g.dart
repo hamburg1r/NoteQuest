@@ -65,7 +65,7 @@ const _$TodoStateEnumMap = {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$todoListHash() => r'27192884917ace62ebc53231679cc045af737eaf';
+String _$todoListHash() => r'84769f1ff862ea213b7567cced9610762bb8b51c';
 
 /// See also [TodoList].
 @ProviderFor(TodoList)
@@ -80,7 +80,7 @@ final todoListProvider =
 );
 
 typedef _$TodoList = AutoDisposeNotifier<Map<String, TodoPair>>;
-String _$todoMainScreenHash() => r'b8ed95ad21b8a35ef6de2067de2553a4415395ce';
+String _$todoMainScreenHash() => r'ab66dbe467a80c2bc962a2455bab88a3da84041a';
 
 /// See also [TodoMainScreen].
 @ProviderFor(TodoMainScreen)

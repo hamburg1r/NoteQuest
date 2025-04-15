@@ -55,21 +55,14 @@ class TodoPair {
 // FIXME: !!! high priority af. Cannot load saves! figure out why
 @riverpod
 class TodoList extends _$TodoList {
-  late final Box<Map<dynamic, dynamic>> _todoBox;
-  late final Box<String> _todoMarkdowns;
+  late final Box<Map<dynamic, dynamic>> _todoBox =
+      Hive.box<Map<dynamic, dynamic>>('todos');
+  late final Box<String> _todoMarkdowns = Hive.box<String>('markdowns');
   late final Logger? logger = kDebugMode ? Logger() : null;
-
-  void init() {
-    logger?.d('Opening todos box');
-    _todoBox = Hive.box<Map<dynamic, dynamic>>('todos');
-    logger?.d('Opening markdowns box');
-    _todoMarkdowns = Hive.box<String>('markdowns');
-  }
 
   // FIXME: needs to be future maybe???
   @override
   Map<String, TodoPair> build() {
-    init();
     logger?.t('Initial state set');
     return updateState();
   }
@@ -192,55 +185,71 @@ class TodoList extends _$TodoList {
 
 @riverpod
 class TodoMainScreen extends _$TodoMainScreen {
-  late final Box<List<String>> _mainScreenTodos;
-  late final List<String> _main;
-  late final List<String> _pinned;
+  late final Box<List<String>> _mainScreenTodos =
+      Hive.box<List<String>>('mainScreenTodos');
+  late final List<String> _main = _mainScreenTodos.get('main') ?? [];
+  late final List<String> _pinned = _mainScreenTodos.get('pinned') ?? [];
   late final Logger? logger = kDebugMode ? Logger() : null;
 
-  void init() {
-    _mainScreenTodos = Hive.box<List<String>>('mainScreenTodos');
-    _main = _mainScreenTodos.get('main') ?? [];
-    _pinned = _mainScreenTodos.get('pinned') ?? [];
-  }
-
   // FIXME: Future?
+  @override
   Map<String, List<String>> build() {
-    init();
     return updateState();
   }
 
-  void add(String id) {
+  void add(
+    String id, {
+    bool update = true,
+  }) {
+    logger?.i('Adding $id');
+    if (_main.contains(id)) return;
     _main.add(id);
-    _mainScreenTodos.put('main', _main);
-    updateState();
+    if (update) updateState();
   }
 
-  void remove(String id) {
+  void remove(
+    String id, {
+    bool update = true,
+  }) {
+    logger?.i('Removing $id');
     _main.remove(id);
-    unpin(id);
-    updateState();
+    _pinned.remove(id);
+    if (update) updateState();
   }
 
-  void pin(String id) {
-    _main.remove(id);
+  void pin(
+    String id, {
+    bool keepMain = false,
+    bool update = true,
+  }) {
+    logger?.i('Pining $id');
+    if (_pinned.contains(id)) return;
+    if (!keepMain) _main.remove(id);
     _pinned.add(id);
-    updateState();
+    if (update) updateState();
   }
 
-  void unpin(String id) {
+  void unpin(
+    String id, {
+    bool update = true,
+  }) {
+    logger?.i('Unpinning $id');
     if (ref.watch(todoListProvider)[id]?.todo.parents.isEmpty ?? false) {
-      _main.add(id);
+      add(id, update: false);
     }
     _pinned.remove(id);
-    updateState();
+    if (update) updateState();
   }
 
   Map<String, List<String>> updateState() {
     logger?.d('Updating State');
+    _mainScreenTodos.put('main', _main);
+    _mainScreenTodos.put('pinned', _pinned);
     state = {
       'main': _main,
       'pinned': _pinned,
     };
+    logger?.i(state);
     return state;
   }
 }
