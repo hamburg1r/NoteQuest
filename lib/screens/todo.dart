@@ -19,6 +19,7 @@ class Todo extends ConsumerWidget {
     List<String> todoIds = ref.watch(todoMainScreenProvider)[type] ?? [];
     logger?.i('todoIds recieved: $todoIds');
     Map<String, TodoPair> todoList = ref.watch(todoListProvider);
+    logger?.i('todoList recieved: $todoIds');
     logger?.t('retrived all todos');
     Map<String, TodoPair> out = {};
     logger?.i('$todoList');
@@ -30,6 +31,73 @@ class Todo extends ConsumerWidget {
     logger?.d('Got todos for type: $type');
     logger?.i(out);
     return out;
+  }
+
+  genMenu(BuildContext context, WidgetRef ref, bool forPinnedTodos,
+      bool forSubTask) {
+    return (TodoPair todo) {
+      logger?.t('Creating menu button for todo list items');
+      return MenuAnchor(
+        menuChildren: [
+          if (forPinnedTodos)
+            MenuItemButton(
+              onPressed: () {
+                logger?.d('Unpinning ${todo.todo.id}');
+                ref.read(todoMainScreenProvider.notifier).unpin(todo.todo.id);
+              },
+              child: const Text('Unpin'),
+            ),
+          if (!forPinnedTodos)
+            MenuItemButton(
+              onPressed: () {
+                logger?.d('Pinning ${todo.todo.id}');
+                ref.read(todoMainScreenProvider.notifier).pin(todo.todo.id);
+              },
+              child: const Text('Pin'),
+            ),
+          if (forPinnedTodos)
+            MenuItemButton(
+              onPressed: () {
+                logger?.d('Editing ${todo.todo.id}');
+                ref.read(todoMainScreenProvider.notifier).add(todo.todo.id);
+              },
+              child: const Text('Add to main Screen'),
+            ),
+          MenuItemButton(
+            onPressed: () {
+              logger?.d('Editing ${todo.todo.id}');
+              todoFormPage(
+                context,
+                id: todo.todo.id,
+                logger: logger,
+              );
+            },
+            child: const Text('Edit'),
+          ),
+          MenuItemButton(
+            onPressed: () {
+              logger?.d('Deleting ${todo.todo.id}');
+              ref.read(todoListProvider.notifier).removeTodo(todo.todo);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+        builder: (_, MenuController controller, Widget? child) {
+          return IconButton(
+            //focusNode: _buttonFocusNode,
+            onPressed: () {
+              logger?.t('Menu button pressed for: ${todo.todo.id}');
+              if (controller.isOpen) {
+                controller.close();
+              } else {
+                controller.open();
+              }
+            },
+            icon: const Icon(Icons.more_vert),
+          );
+        },
+      );
+    };
   }
 
   @override
@@ -46,41 +114,7 @@ class Todo extends ConsumerWidget {
             style: Theme.of(context).textTheme.displaySmall,
           ),
         ),
-        menu: (TodoPair todo) {
-          logger?.t('Creating menu button for todo list items');
-          return MenuAnchor(
-            menuChildren: [
-              MenuItemButton(
-                onPressed: () {
-                  logger?.d('Editing ${todo.todo.id}');
-                  todoFormPage(context, id: todo.todo.id);
-                },
-                child: const Text('Edit'),
-              ),
-              MenuItemButton(
-                onPressed: () {
-                  logger?.d('Deleting ${todo.todo.id}');
-                  ref.read(todoListProvider.notifier).removeTodo(todo.todo);
-                },
-                child: const Text('Delete'),
-              ),
-            ],
-            builder: (_, MenuController controller, Widget? child) {
-              return IconButton(
-                //focusNode: _buttonFocusNode,
-                onPressed: () {
-                  logger?.t('Menu button pressed for: ${todo.todo.id}');
-                  if (controller.isOpen) {
-                    controller.close();
-                  } else {
-                    controller.open();
-                  }
-                },
-                icon: const Icon(Icons.more_vert),
-              );
-            },
-          );
-        },
+        menu: genMenu(context, ref, false, false),
         pinned: getTodos(ref, 'pinned'),
         nonPinned: getTodos(ref, 'main'),
         logger: logger,
@@ -95,7 +129,10 @@ class Todo extends ConsumerWidget {
         //),
         onPressed: () {
           logger?.t('Calling todoFormPage for adding new todo');
-          todoFormPage(context);
+          todoFormPage(
+            context,
+            logger: logger,
+          );
         },
         child: Icon(Icons.add),
       ),
