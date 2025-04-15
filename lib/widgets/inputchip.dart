@@ -30,6 +30,7 @@ class _InputWithChipsState extends State<InputWithChips> {
     super.initState();
     _controller = TextEditingController();
     _controller.addListener(_handleText);
+    widget.controller?.items.forEach(createChip);
   }
 
   @override
