@@ -15,6 +15,8 @@ class TodoTiles extends ConsumerWidget {
   final Widget whenEmpty;
   final Widget trailing;
   final Function(TodoPair)? menu;
+  final Function(TodoPair)? pinnedMenu;
+  final Function(TodoPair)? nonPinnedMenu;
 
   final Logger? logger;
 
@@ -25,6 +27,8 @@ class TodoTiles extends ConsumerWidget {
     this.whenEmpty = nil,
     this.trailing = nil,
     this.menu,
+    this.pinnedMenu,
+    this.nonPinnedMenu,
     super.key,
     this.logger,
   });
@@ -45,7 +49,7 @@ class TodoTiles extends ConsumerWidget {
                 'Pinned:',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              todoList(pinned!),
+              todoList(pinned!, pinnedMenu ?? menu),
             ],
             if (nonPinned?.isNotEmpty ?? false) ...[
               if (pinned?.isNotEmpty ?? false)
@@ -53,7 +57,7 @@ class TodoTiles extends ConsumerWidget {
                   'Unpinned:',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-              todoList(nonPinned!),
+              todoList(nonPinned!, nonPinnedMenu ?? menu),
             ],
           ]),
         ),
@@ -61,7 +65,7 @@ class TodoTiles extends ConsumerWidget {
     );
   }
 
-  ListView todoList(Map<String, TodoPair> todos) {
+  ListView todoList(Map<String, TodoPair> todos, Function(TodoPair)? menu) {
     List<String> todoList = todos.keys.toList();
     logger?.t('Building todoList');
     logger?.i(todos);
@@ -80,7 +84,7 @@ class TodoTiles extends ConsumerWidget {
                 todoPair.todo.title,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              if (menu != null) menu!(todoPair),
+              if (menu != null) menu(todoPair),
             ],
           ),
           subtitle: _TodoDetails(
