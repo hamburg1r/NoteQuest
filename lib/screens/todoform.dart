@@ -10,14 +10,17 @@ import 'package:uuid/uuid.dart';
 
 part 'todoform.g.dart';
 
-Future<void> todoFormPage(context, {id}) => Navigator.push(
+Future<void> todoFormPage(context, {id, logger}) => Navigator.push(
       context,
       MaterialPageRoute<void>(
         builder: (context) => Scaffold(
           appBar: AppBar(
             title: Text('Add Todo'),
           ),
-          body: TodoForm(id: id),
+          body: TodoForm(
+            id: id,
+            logger: logger,
+          ),
         ),
       ),
     );
@@ -106,7 +109,6 @@ class _TodoFormState extends ConsumerState<TodoForm> {
       (childControllers['dueTime'] as DateTimePickerController).dateTime =
           todoModel.dueTime;
       if (todoModel.hasMarkdown) {
-        // TODO: load markdown from saved file
         (childControllers['description'] as TextEditingController).text =
             markdown!;
       }
@@ -123,7 +125,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
         ),
         SizedBox(height: 7),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(4.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -136,9 +138,39 @@ class _TodoFormState extends ConsumerState<TodoForm> {
               ),
               FilledButton(
                 onPressed: () {
+                  logger?.t('Saving');
+                  logger?.t(childControllers.keys);
                   if ((childControllers['title'] as TextEditingController)
                       .text
                       .isNotEmpty) {
+                    logger?.t('Title not empty');
+                    logger?.i(uuid);
+                    logger?.i(
+                        (childControllers['title'] as TextEditingController)
+                            .text);
+                    logger?.i(
+                        (childControllers['priority'] as TextEditingController)
+                            .text);
+                    logger?.i(TodoPriority.values.asNameMap());
+                    logger?.i(TodoPriority.values.asNameMap()[
+                        (childControllers['priority'] as TextEditingController)
+                            .text
+                            .toLowerCase()]);
+                    logger?.i((childControllers['tag'] as TagController).items);
+                    logger?.i(TodoState.values.asNameMap()[
+                        (childControllers['state'] as TextEditingController)
+                            .text
+                            .toLowerCase()]!);
+                    logger?.i((childControllers['scheduledTime']
+                            as DateTimePickerController)
+                        .dateTime);
+                    logger?.i((childControllers['dueTime']
+                            as DateTimePickerController)
+                        .dateTime);
+                    logger?.i((childControllers['description']
+                            as TextEditingController)
+                        .text
+                        .isNotEmpty);
                     var todo = TodoModel(
                       id: uuid,
                       title:
@@ -147,11 +179,13 @@ class _TodoFormState extends ConsumerState<TodoForm> {
                       priority: TodoPriority.values.asNameMap()[
                           (childControllers['priority']
                                   as TextEditingController)
-                              .text]!,
+                              .text
+                              .toLowerCase()]!,
                       tag: (childControllers['tag'] as TagController).items,
                       state: TodoState.values.asNameMap()[
                           (childControllers['state'] as TextEditingController)
-                              .text]!,
+                              .text
+                              .toLowerCase()]!,
                       scheduledTime: (childControllers['scheduledTime']
                               as DateTimePickerController)
                           .dateTime,
@@ -163,6 +197,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
                           .text
                           .isNotEmpty,
                     );
+                    logger?.i(todo);
                     String? markdown = (childControllers['description']
                             as TextEditingController)
                         .text;
@@ -228,21 +263,26 @@ class _TodoDetails extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(4.0),
+            padding: padding,
             child: InputWithChips(
               label: "Tag",
               controller: childControllers['tag'],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownMenu(
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: padding,
+                child: DropdownMenu(
                   controller: childControllers['state'],
-                  initialSelection: TodoState.todo,
-                  // width: MediaQuery.of(context).size.width / 2,
+                  initialSelection: TodoState.values.asNameMap()[
+                          (childControllers['state'] as TextEditingController)
+                              .text
+                              .toLowerCase()] ??
+                      TodoState.todo,
+                  width: MediaQuery.of(context).size.width / 2 - 8,
                   dropdownMenuEntries: <DropdownMenuEntry<TodoState>>[
                     for (var value in TodoState.values)
                       DropdownMenuEntry(
@@ -251,16 +291,26 @@ class _TodoDetails extends ConsumerWidget {
                       ),
                   ],
                 ),
-                DropdownMenu(
+              ),
+              Padding(
+                padding: padding,
+                child: DropdownMenu(
                   controller: childControllers['priority'],
-                  initialSelection: TodoPriority.low,
-                  // width: MediaQuery.of(context).size.width / 2,
+                  initialSelection: TodoPriority.values.asNameMap()[
+                          (childControllers['priority']
+                                  as TextEditingController)
+                              .text
+                              .toLowerCase()] ??
+                      TodoPriority.low,
+                  width: MediaQuery.of(context).size.width / 2 - 8,
                   dropdownMenuEntries: <DropdownMenuEntry<TodoPriority>>[
                     for (var value in TodoPriority.values)
                       DropdownMenuEntry(
                         value: value,
                         label: value.name.toUpperCase(),
                         leadingIcon: Container(
+                          height: Theme.of(context).textTheme.bodySmall?.fontSize,
+                          width: Theme.of(context).textTheme.bodySmall?.fontSize,
                           decoration: BoxDecoration(
                             color: value.color,
                             shape: BoxShape.circle,
@@ -269,11 +319,11 @@ class _TodoDetails extends ConsumerWidget {
                       ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Padding(
-            padding: EdgeInsets.all(4.0),
+            padding: padding,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
