@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'todoform.dart';
+part of 'todo_form.dart';
 
 // **************************************************************************
 // RiverpodGenerator

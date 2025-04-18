@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:notequest/models/todo.dart';
-import 'package:notequest/screens/todoform.dart';
+import 'package:notequest/screens/todo_form.dart';
 import '../widgets/list.dart';
 
 class Todo extends ConsumerWidget {
