@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:nil/nil.dart';
+import 'package:notequest/screens/todo_view.dart';
 import 'package:notequest/utils.dart';
 
 import '../models/todo.dart';
@@ -76,6 +77,9 @@ class TodoTiles extends ConsumerWidget {
         String id = todoList[index];
         TodoPair todoPair = todos[id]!;
         return ListTile(
+          onTap: () {
+            makeRoute(context, TodoView(todo: todoPair.todo));
+          },
           leading: Text((index).toString()),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

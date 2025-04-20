@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 String customDateFormat(DateTime date,
     [bool period = true, String dateTimeSep = ' ']) {
   String timeStr = period
@@ -8,3 +10,10 @@ String customDateFormat(DateTime date,
   if (date.year != DateTime.now().year) dateStr += "/${date.year}";
   return timeStr + dateTimeSep + dateStr;
 }
+
+Future<void> makeRoute(context, screen) => Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => screen,
+      ),
+    );

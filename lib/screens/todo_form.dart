@@ -10,21 +10,6 @@ import 'package:uuid/uuid.dart';
 
 part 'todo_form.g.dart';
 
-Future<void> todoFormPage(context, {id, logger}) => Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: Text('Add Todo'),
-          ),
-          body: TodoForm(
-            id: id,
-            logger: logger,
-          ),
-        ),
-      ),
-    );
-
 class TodoForm extends ConsumerStatefulWidget {
   const TodoForm({
     this.id,
@@ -117,111 +102,118 @@ class _TodoFormState extends ConsumerState<TodoForm> {
     //String dropdownValue = 3.toString();
 
     // TODO: modularize this piece of shit
-    return Column(
-      children: [
-        _TodoDetails(
-          childControllers: childControllers,
-          logger: logger,
-        ),
-        SizedBox(height: 7),
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              OutlinedButton(
-                onPressed: () {
-                  logger?.d('Canceled adding todos');
-                  Navigator.pop(context);
-                },
-                child: Text("cancel"),
-              ),
-              FilledButton(
-                onPressed: () {
-                  logger?.t('Saving');
-                  logger?.t(childControllers.keys);
-                  if ((childControllers['title'] as TextEditingController)
-                      .text
-                      .isNotEmpty) {
-                    logger?.t('Title not empty');
-                    logger?.i(uuid);
-                    logger?.i(
-                        (childControllers['title'] as TextEditingController)
-                            .text);
-                    logger?.i(
-                        (childControllers['priority'] as TextEditingController)
-                            .text);
-                    logger?.i(TodoPriority.values.asNameMap());
-                    logger?.i(TodoPriority.values.asNameMap()[
-                        (childControllers['priority'] as TextEditingController)
-                            .text
-                            .toLowerCase()]);
-                    logger?.i((childControllers['tag'] as TagController).items);
-                    logger?.i(TodoState.values.asNameMap()[
-                        (childControllers['state'] as TextEditingController)
-                            .text
-                            .toLowerCase()]!);
-                    logger?.i((childControllers['scheduledTime']
-                            as DateTimePickerController)
-                        .dateTime);
-                    logger?.i((childControllers['dueTime']
-                            as DateTimePickerController)
-                        .dateTime);
-                    logger?.i((childControllers['description']
-                            as TextEditingController)
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(todo == null ? 'Add Todo' : 'Edit Todo'),
+      ),
+      body: Column(
+        children: [
+          _TodoDetails(
+            childControllers: childControllers,
+            logger: logger,
+          ),
+          SizedBox(height: 7),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    logger?.d('Canceled adding todos');
+                    Navigator.pop(context);
+                  },
+                  child: Text("cancel"),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    logger?.t('Saving');
+                    logger?.t(childControllers.keys);
+                    if ((childControllers['title'] as TextEditingController)
                         .text
-                        .isNotEmpty);
-                    var todo = TodoModel(
-                      id: uuid,
-                      title:
+                        .isNotEmpty) {
+                      logger?.t('Title not empty');
+                      logger?.i(uuid);
+                      logger?.i(
                           (childControllers['title'] as TextEditingController)
-                              .text,
-                      priority: TodoPriority.values.asNameMap()[
+                              .text);
+                      logger?.i((childControllers['priority']
+                              as TextEditingController)
+                          .text);
+                      logger?.i(TodoPriority.values.asNameMap());
+                      logger?.i(TodoPriority.values.asNameMap()[
                           (childControllers['priority']
                                   as TextEditingController)
                               .text
-                              .toLowerCase()]!,
-                      tag: (childControllers['tag'] as TagController).items,
-                      state: TodoState.values.asNameMap()[
+                              .toLowerCase()]);
+                      logger
+                          ?.i((childControllers['tag'] as TagController).items);
+                      logger?.i(TodoState.values.asNameMap()[
                           (childControllers['state'] as TextEditingController)
                               .text
-                              .toLowerCase()]!,
-                      scheduledTime: (childControllers['scheduledTime']
+                              .toLowerCase()]!);
+                      logger?.i((childControllers['scheduledTime']
                               as DateTimePickerController)
-                          .dateTime,
-                      dueTime: (childControllers['dueTime']
+                          .dateTime);
+                      logger?.i((childControllers['dueTime']
                               as DateTimePickerController)
-                          .dateTime,
-                      hasMarkdown: (childControllers['description']
+                          .dateTime);
+                      logger?.i((childControllers['description']
                               as TextEditingController)
                           .text
-                          .isNotEmpty,
-                    );
-                    logger?.i(todo);
-                    String? markdown = (childControllers['description']
-                            as TextEditingController)
-                        .text;
-                    if (markdown == '') {
-                      markdown = null;
+                          .isNotEmpty);
+                      var todo = TodoModel(
+                        id: uuid,
+                        title:
+                            (childControllers['title'] as TextEditingController)
+                                .text,
+                        priority: TodoPriority.values.asNameMap()[
+                            (childControllers['priority']
+                                    as TextEditingController)
+                                .text
+                                .toLowerCase()]!,
+                        tag: (childControllers['tag'] as TagController).items,
+                        state: TodoState.values.asNameMap()[
+                            (childControllers['state'] as TextEditingController)
+                                .text
+                                .toLowerCase()]!,
+                        scheduledTime: (childControllers['scheduledTime']
+                                as DateTimePickerController)
+                            .dateTime,
+                        dueTime: (childControllers['dueTime']
+                                as DateTimePickerController)
+                            .dateTime,
+                        hasMarkdown: (childControllers['description']
+                                as TextEditingController)
+                            .text
+                            .isNotEmpty,
+                      );
+                      logger?.i(todo);
+                      String? markdown = (childControllers['description']
+                              as TextEditingController)
+                          .text;
+                      if (markdown == '') {
+                        markdown = null;
+                      }
+                      ref.read(todoListProvider.notifier).addTodo(
+                            todo,
+                            markdown: markdown,
+                            parent: widget.parent,
+                          );
+                      Navigator.pop(context);
+                    } else {
+                      ref
+                          .read(errorMessageProvider.notifier)
+                          .setMessage("This field cannot be empty");
                     }
-                    ref.read(todoListProvider.notifier).addTodo(
-                          todo,
-                          markdown: markdown,
-                          parent: widget.parent,
-                        );
-                    Navigator.pop(context);
-                  } else {
-                    ref
-                        .read(errorMessageProvider.notifier)
-                        .setMessage("This field cannot be empty");
-                  }
-                },
-                child: Text("save"),
-              ),
-            ],
+                  },
+                  child: Text("save"),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -309,8 +301,10 @@ class _TodoDetails extends ConsumerWidget {
                         value: value,
                         label: value.name.toUpperCase(),
                         leadingIcon: Container(
-                          height: Theme.of(context).textTheme.bodySmall?.fontSize,
-                          width: Theme.of(context).textTheme.bodySmall?.fontSize,
+                          height:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
+                          width:
+                              Theme.of(context).textTheme.bodySmall?.fontSize,
                           decoration: BoxDecoration(
                             color: value.color,
                             shape: BoxShape.circle,

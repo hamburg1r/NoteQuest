@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:notequest/models/todo.dart';
 import 'package:notequest/screens/todo_form.dart';
+import 'package:notequest/utils.dart';
 import '../widgets/list.dart';
 
 class Todo extends ConsumerWidget {
@@ -33,11 +34,17 @@ class Todo extends ConsumerWidget {
     return out;
   }
 
-  genMenu(BuildContext context, WidgetRef ref, bool forPinnedTodos,
-      bool forSubTask) {
+  MenuAnchor Function(TodoPair todo) genMenu({
+    required BuildContext context,
+    required WidgetRef ref,
+    required bool forPinnedTodos,
+    required bool forSubTask,
+    Logger? logger,
+  }) {
     return (TodoPair todo) {
       logger?.t('Creating menu button for todo list items');
       return MenuAnchor(
+        // style: MenuStyle(maximumSize: MaterialStateProperty),
         menuChildren: [
           if (forPinnedTodos)
             MenuItemButton(
@@ -55,6 +62,15 @@ class Todo extends ConsumerWidget {
               },
               child: const Text('Pin'),
             ),
+          // TODO: check after todo view is added
+          if (!forPinnedTodos && !forSubTask)
+            MenuItemButton(
+              onPressed: () {
+                logger?.d('Removing ${todo.todo.id} from main screen');
+                ref.read(todoMainScreenProvider.notifier).add(todo.todo.id);
+              },
+              child: const Text('Remove from main Screen'),
+            ),
           if (forPinnedTodos)
             MenuItemButton(
               onPressed: () {
@@ -66,10 +82,12 @@ class Todo extends ConsumerWidget {
           MenuItemButton(
             onPressed: () {
               logger?.d('Editing ${todo.todo.id}');
-              todoFormPage(
+              makeRoute(
                 context,
-                id: todo.todo.id,
-                logger: logger,
+                TodoForm(
+                  id: todo.todo.id,
+                  logger: logger,
+                ),
               );
             },
             child: const Text('Edit'),
@@ -114,8 +132,18 @@ class Todo extends ConsumerWidget {
             style: Theme.of(context).textTheme.displaySmall,
           ),
         ),
-        nonPinnedMenu: genMenu(context, ref, false, false),
-        pinnedMenu: genMenu(context, ref, true, false),
+        nonPinnedMenu: genMenu(
+          context: context,
+          ref: ref,
+          forPinnedTodos: false,
+          forSubTask: false,
+        ),
+        pinnedMenu: genMenu(
+          context: context,
+          ref: ref,
+          forPinnedTodos: true,
+          forSubTask: false,
+        ),
         pinned: getTodos(ref, 'pinned'),
         nonPinned: getTodos(ref, 'main'),
         logger: logger,
@@ -130,9 +158,11 @@ class Todo extends ConsumerWidget {
         //),
         onPressed: () {
           logger?.t('Calling todoFormPage for adding new todo');
-          todoFormPage(
+          makeRoute(
             context,
-            logger: logger,
+            TodoForm(
+              logger: logger,
+            ),
           );
         },
         child: Icon(Icons.add),
