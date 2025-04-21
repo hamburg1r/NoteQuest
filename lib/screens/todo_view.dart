@@ -45,6 +45,11 @@ class _TodoViewState extends ConsumerState<TodoView> {
     }
   }
 
+  void openChild(String todoId) {
+    parents.add(todo.id);
+    setCurrentFromID(todoId);
+  }
+
   void previousOrExit() {
     if (parents.isEmpty) {
       logger?.t('Going to previous Screen');
