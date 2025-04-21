@@ -17,20 +17,17 @@ class Todo extends ConsumerWidget {
   });
 
   // FIXME: Future?
-  Map<String, TodoPair>? getTodos(WidgetRef ref, String type) {
-    List<String> todoIds = ref.watch(todoMainScreenProvider)[type] ?? [];
-    logger?.i('todoIds recieved: $todoIds');
-    Map<String, TodoPair> todoList = ref.watch(todoListProvider);
-    logger?.i('todoList recieved: $todoIds');
-    logger?.t('retrived all todos');
+  Map<String, TodoPair>? getTodos(
+    List<String> todos,
+    Map<String, TodoPair> todoList,
+  ) {
     Map<String, TodoPair> out = {};
     logger?.i('$todoList');
-    for (String id in todoIds) {
+    for (String id in todos) {
       logger?.i('checking for $id got:${todoList[id].toString()}');
       out[id] = todoList[id]!;
     }
     if (out.isEmpty) return null;
-    logger?.d('Got todos for type: $type');
     logger?.i(out);
     return out;
   }
@@ -121,6 +118,12 @@ class Todo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    List<String> mainTodoIds = ref.watch(todoMainScreenProvider)['main'] ?? [];
+    List<String> pinnedTodoIds =
+        ref.watch(todoMainScreenProvider)['pinned'] ?? [];
+
+    Map<String, TodoPair> todoList = ref.watch(todoListProvider);
+
     logger?.t('Running Todo build method');
     return Scaffold(
       appBar: appbar(Text('Todo')),
@@ -145,10 +148,16 @@ class Todo extends ConsumerWidget {
           forPinnedTodos: true,
           forSubTask: false,
         ),
-        pinned: getTodos(ref, 'pinned'),
-        nonPinned: getTodos(ref, 'main'),
+        pinned: getTodos(pinnedTodoIds, todoList),
+        nonPinned: getTodos(mainTodoIds, todoList),
         onClick: (TodoPair todopair) => () {
-          makeRoute(context, TodoView(todo: todopair.todo));
+          makeRoute(
+            context,
+            TodoView(
+              todo: todopair.todo,
+              logger: logger,
+            ),
+          );
         },
         logger: logger,
       ),
