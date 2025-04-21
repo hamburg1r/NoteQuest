@@ -27,11 +27,53 @@ class _TodoViewState extends ConsumerState<TodoView> {
   late List<String> parents = widget.parents;
   late Logger? logger = widget.logger;
 
+  void setCurrentFromID(String todoId) {
+    try {
+      // logger?.t()
+      setState(() {
+        todo = ref.watch(todoListProvider)[todoId]!.todo;
+      });
+    } catch (nullError) {
+      ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
+
+      scaffoldMessenger.hideCurrentSnackBar();
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text('$todoId not found!!'),
+        ),
+      );
+    }
+  }
+
+  void previousOrExit() {
+    if (parents.isEmpty) {
+      logger?.t('Going to previous Screen');
+      Navigator.of(context).pop();
+      return;
+    } else {
+      logger?.t('Going up the parent tree');
+      setCurrentFromID(parents.last);
+    }
+    parents.removeLast();
+  }
+
+  void deleteCurrent() {
+    ref.read(todoListProvider.notifier).removeTodo(todo);
+    previousOrExit();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         // title: Text(todo.title),
+        leading: IconButton(
+          onPressed: () {
+            logger?.t('Back button pressed');
+            previousOrExit();
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -47,10 +89,7 @@ class _TodoViewState extends ConsumerState<TodoView> {
             icon: Icon(Icons.edit),
           ),
           IconButton(
-            onPressed: () {
-              ref.read(todoListProvider.notifier).removeTodo(todo);
-              // TODO: show parent todo or exit
-            },
+            onPressed: deleteCurrent,
             icon: Icon(Icons.delete),
           )
         ],
