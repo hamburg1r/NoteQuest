@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:nil/nil.dart';
-import 'package:notequest/screens/todo_view.dart';
 import 'package:notequest/utils.dart';
 
 import '../models/todo.dart';
@@ -15,9 +14,10 @@ class TodoTiles extends ConsumerWidget {
   final Widget leading;
   final Widget whenEmpty;
   final Widget trailing;
-  final Function(TodoPair)? menu;
-  final Function(TodoPair)? pinnedMenu;
-  final Function(TodoPair)? nonPinnedMenu;
+  final MenuAnchor Function(TodoPair)? menu;
+  final MenuAnchor Function(TodoPair)? pinnedMenu;
+  final MenuAnchor Function(TodoPair)? nonPinnedMenu;
+  final void Function()? Function(TodoPair)? onClick;
 
   final Logger? logger;
 
@@ -30,6 +30,7 @@ class TodoTiles extends ConsumerWidget {
     this.menu,
     this.pinnedMenu,
     this.nonPinnedMenu,
+    this.onClick,
     super.key,
     this.logger,
   });
@@ -66,7 +67,10 @@ class TodoTiles extends ConsumerWidget {
     );
   }
 
-  ListView todoList(Map<String, TodoPair> todos, Function(TodoPair)? menu) {
+  ListView todoList(
+    Map<String, TodoPair> todos,
+    MenuAnchor Function(TodoPair)? menu,
+  ) {
     List<String> todoList = todos.keys.toList();
     logger?.t('Building todoList');
     logger?.i(todos);
@@ -77,9 +81,7 @@ class TodoTiles extends ConsumerWidget {
         String id = todoList[index];
         TodoPair todoPair = todos[id]!;
         return ListTile(
-          onTap: () {
-            makeRoute(context, TodoView(todo: todoPair.todo));
-          },
+          onTap: onClick != null ? onClick!(todoPair) : null,
           leading: Text((index).toString()),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

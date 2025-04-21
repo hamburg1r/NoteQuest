@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:notequest/models/todo.dart';
 import 'package:notequest/screens/todo_form.dart';
+import 'package:notequest/screens/todo_view.dart';
 import 'package:notequest/utils.dart';
 import '../widgets/list.dart';
 
@@ -146,6 +147,9 @@ class Todo extends ConsumerWidget {
         ),
         pinned: getTodos(ref, 'pinned'),
         nonPinned: getTodos(ref, 'main'),
+        onClick: (TodoPair todopair) => () {
+          makeRoute(context, TodoView(todo: todopair.todo));
+        },
         logger: logger,
       ),
       floatingActionButton: FloatingActionButton(
