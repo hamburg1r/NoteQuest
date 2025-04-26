@@ -24,11 +24,11 @@ Future<void> makeRoute(context, screen) => Navigator.push(
     );
 
 // FIXME: Future?
-Map<String, TodoPair>? getTodos({
-  required List<String> todos,
-  required Map<String, TodoPair> todoList,
+Map<String, TodoPair>? getTodos(
+  List<String> todos,
+  Map<String, TodoPair> todoList, [
   Logger? logger,
-}) {
+]) {
   Map<String, TodoPair> out = {};
   logger?.i('$todoList');
   for (String id in todos) {

@@ -133,14 +133,14 @@ class Todo extends ConsumerWidget {
           forSubTask: false,
         ),
         pinned: getTodos(
-          todos: pinnedTodoIds,
-          todoList: todoList,
-          logger: logger,
+          pinnedTodoIds,
+          todoList,
+          logger,
         ),
         nonPinned: getTodos(
-          todos: mainTodoIds,
-          todoList: todoList,
-          logger: logger,
+          mainTodoIds,
+          todoList,
+          logger,
         ),
         onClick: (TodoPair todopair) => () {
           makeRoute(
