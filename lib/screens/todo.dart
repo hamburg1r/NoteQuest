@@ -16,22 +16,6 @@ class Todo extends ConsumerWidget {
     this.logger,
   });
 
-  // FIXME: Future?
-  Map<String, TodoPair>? getTodos(
-    List<String> todos,
-    Map<String, TodoPair> todoList,
-  ) {
-    Map<String, TodoPair> out = {};
-    logger?.i('$todoList');
-    for (String id in todos) {
-      logger?.i('checking for $id got:${todoList[id].toString()}');
-      out[id] = todoList[id]!;
-    }
-    if (out.isEmpty) return null;
-    logger?.i(out);
-    return out;
-  }
-
   MenuAnchor Function(TodoPair todo) genMenu({
     required BuildContext context,
     required WidgetRef ref,
@@ -148,8 +132,16 @@ class Todo extends ConsumerWidget {
           forPinnedTodos: true,
           forSubTask: false,
         ),
-        pinned: getTodos(pinnedTodoIds, todoList),
-        nonPinned: getTodos(mainTodoIds, todoList),
+        pinned: getTodos(
+          todos: pinnedTodoIds,
+          todoList: todoList,
+          logger: logger,
+        ),
+        nonPinned: getTodos(
+          todos: mainTodoIds,
+          todoList: todoList,
+          logger: logger,
+        ),
         onClick: (TodoPair todopair) => () {
           makeRoute(
             context,
