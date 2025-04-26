@@ -74,11 +74,9 @@ class TodoList extends _$TodoList {
     logger?.d('Adding $childId to ${todo.toString()}');
     _todoBox.put(
       todo.id,
-      todo
-          .copyWith(
-            subTasks: todo.subTasks..add(childId),
-          )
-          .toJson(),
+      todo.copyWith(
+        subTasks: [...todo.subTasks, childId],
+      ).toJson(),
     );
     if (update) updateState();
   }
@@ -93,7 +91,7 @@ class TodoList extends _$TodoList {
       todo.id,
       todo
           .copyWith(
-            subTasks: todo.subTasks..remove(childId),
+            subTasks: todo.subTasks.where((id) => id != childId).toList(),
           )
           .toJson(),
     );
@@ -106,8 +104,13 @@ class TodoList extends _$TodoList {
     bool update = true,
   }) {
     logger?.d('Adding parent: $parentId');
-    todo.parents.add(parentId);
-    _todoBox.put(todo.id, todo.toJson());
+    _todoBox.put(
+      todo.id,
+      todo.copyWith(
+        parents: [...todo.parents, parentId],
+      ).toJson(),
+    );
+
     if (update) updateState();
   }
 
@@ -117,8 +120,19 @@ class TodoList extends _$TodoList {
     bool update = true,
   }) {
     logger?.d('Removing parent: $parentId');
-    todo.parents.remove(parentId);
-    _todoBox.put(todo.id, todo.toJson());
+    _todoBox.put(
+      todo.id,
+      todo
+          .copyWith(
+            parents: todo.parents
+                .where(
+                  (id) => id != parentId,
+                )
+                .toList(),
+          )
+          .toJson(),
+    );
+
     if (update) updateState();
   }
 
