@@ -124,22 +124,19 @@ class _TodoViewState extends ConsumerState<TodoView> {
       // ),
       body: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  todo.title,
-                  style: Theme.of(context).textTheme.titleLarge,
+          SliverList(
+            delegate: SliverChildListDelegate.fixed([
+              Text(
+                todo.title,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Divider(),
+              if (todo.hasMarkdown)
+                MarkdownWidget(
+                  shrinkWrap: true,
+                  data: markdown!,
                 ),
-                Divider(),
-                if (todo.hasMarkdown)
-                  MarkdownWidget(
-                    shrinkWrap: true,
-                    data: markdown!,
-                  ),
-              ],
-            ),
+            ]),
           ),
           TodoTiles(
             whenEmpty: addTodoButton(),
