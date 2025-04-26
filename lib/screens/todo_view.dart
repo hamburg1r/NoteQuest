@@ -25,7 +25,6 @@ class TodoView extends ConsumerStatefulWidget {
 
 class _TodoViewState extends ConsumerState<TodoView> {
   late TodoModel todo = widget.todo;
-  late String? markdown = ref.watch(todoListProvider)[todo.id]?.markdown;
   late List<String> parents = widget.parents;
   late Logger? logger = widget.logger;
 
@@ -71,6 +70,7 @@ class _TodoViewState extends ConsumerState<TodoView> {
 
   @override
   Widget build(BuildContext context) {
+    final String? markdown = ref.watch(todoListProvider)[todo.id]?.markdown;
     return Scaffold(
       appBar: AppBar(
         // title: Text(todo.title),
