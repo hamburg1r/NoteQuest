@@ -5,6 +5,7 @@ import 'package:markdown_widget/widget/markdown.dart';
 import 'package:notequest/models/todo.dart';
 import 'package:notequest/screens/todo_form.dart';
 import 'package:notequest/utils.dart';
+import 'package:notequest/widgets/list.dart';
 
 class TodoView extends ConsumerStatefulWidget {
   const TodoView({
@@ -24,6 +25,7 @@ class TodoView extends ConsumerStatefulWidget {
 
 class _TodoViewState extends ConsumerState<TodoView> {
   late TodoModel todo = widget.todo;
+  late String? markdown = ref.watch(todoListProvider)[todo.id]?.markdown;
   late List<String> parents = widget.parents;
   late Logger? logger = widget.logger;
 
@@ -63,8 +65,8 @@ class _TodoViewState extends ConsumerState<TodoView> {
   }
 
   void deleteCurrent() {
-    ref.read(todoListProvider.notifier).removeTodo(todo);
     previousOrExit();
+    ref.read(todoListProvider.notifier).removeTodo(todo);
   }
 
   @override
@@ -101,28 +103,26 @@ class _TodoViewState extends ConsumerState<TodoView> {
       ),
       // body: MarkdownWidget(
       //   shrinkWrap: true,
-      //   data: ref.watch(todoListProvider)[todo.id]!.markdown!,
+      //   data: markdown!,
       // ),
       body: ListView(
         shrinkWrap: true,
         children: [
           Text(
             todo.title,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
+          Spacer(),
           if (todo.hasMarkdown)
             MarkdownWidget(
               shrinkWrap: true,
-              data: ref.watch(todoListProvider)[todo.id]!.markdown!,
+              data: markdown!,
             ),
+          TodoTiles(
+              // nonPinned: todo.subTasks,
+              ),
         ],
       ),
-      // body: CustomScrollView(
-      //   slivers: [
-      //     SliverAppBar(
-      //       floating: true,
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
