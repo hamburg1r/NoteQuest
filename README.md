@@ -17,13 +17,13 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Features
 1. Task & To-Do Manager
-    - [ ] Add, edit, and delete tasks with due dates
+    - [x] Add, edit, and delete tasks with due dates
     - [ ] Recurring tasks with customizable schedules
-    - [ ] Task categories (Work, Personal, Shopping, etc.)
-    - [ ] Priority levels (High, Medium, Low)
-    - [ ] Subtasks for breaking down larger tasks
+    - [x] Task categories (Work, Personal, Shopping, etc.)
+    - [x] Priority levels (High, Medium, Low)
+    - [x] Subtasks for breaking down larger tasks
     - [ ] Drag & drop task reordering
-    - [ ] Offline support with local storage
+    - [x] Offline support with local storage
     - [ ] Export tasks as CSV/PDF
 2. Calendar & Event Scheduler (Without Google Calendar Sync)
     - [ ] Daily, weekly, and monthly calendar views
@@ -31,9 +31,9 @@ samples, guidance on mobile development, and a full API reference.
     - [ ] Custom event notifications and reminders
     - [ ] Meeting & appointment scheduling with participants
 3. Notes & Document Organizer (Without Multi- Device Sync)
-    - [ ] Markdown-supported note-taking
-    - [ ] Rich text formatting (bold, italic, headings, lists)
-    - [ ] Attach images, PDFs, and links to notes
+    - [x] Markdown-supported note-taking
+    - [x] Rich text formatting (bold, italic, headings, lists)
+    - [x] Attach images, PDFs, and links to notes
     - [ ] Folder-based note organization
     - [ ] Pin important notes to top
     - [ ] Convert notes to PDFs

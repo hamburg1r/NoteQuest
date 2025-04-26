@@ -52,7 +52,6 @@ class TodoPair {
   const TodoPair(this.todo, [this.description]);
 }
 
-// FIXME: !!! high priority af. Cannot load saves! figure out why
 @riverpod
 class TodoList extends _$TodoList {
   late final Box<Map<dynamic, dynamic>> _todoBox =
