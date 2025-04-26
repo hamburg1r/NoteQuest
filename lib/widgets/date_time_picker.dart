@@ -46,15 +46,11 @@ class _DateTimePickerState extends State<DateTimePicker> {
               //titlePadding: EdgeInsets.symmetric(horizontal: double.infinity),
               //alignment: AlignmentDirectional.center,
               children: <Widget>[
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox.square(dimension: 10),
                 DateTimeButtons(
                   controller: controller,
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox.square(dimension: 10),
                 Row(
                   children: <Widget>[
                     Spacer(),
