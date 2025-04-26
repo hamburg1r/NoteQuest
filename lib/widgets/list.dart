@@ -40,7 +40,9 @@ class TodoTiles extends ConsumerWidget {
     logger?.t('Running TodoTiles build method');
     if ((pinned?.isEmpty ?? true) && (nonPinned?.isEmpty ?? true)) {
       logger?.d('No data available for building the list');
-      return whenEmpty;
+      return SliverToBoxAdapter(
+        child: whenEmpty,
+      );
     }
     return SliverList(
       delegate: SliverChildListDelegate.fixed([
@@ -84,7 +86,7 @@ class TodoTiles extends ConsumerWidget {
             children: [
               Text(
                 todoPair.todo.title,
-                style: Theme.of(context).textTheme.headlineMedium,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               if (menu != null) menu(todoPair),
             ],
