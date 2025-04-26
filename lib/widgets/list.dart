@@ -144,7 +144,10 @@ class _TodoDetails extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                 ),
-                Text(todo.todo.priority.toString()),
+                SizedBox.square(
+                  dimension: 4,
+                ),
+                Text(todo.todo.priority.name.toUpperCase()),
               ],
             )
           ],
