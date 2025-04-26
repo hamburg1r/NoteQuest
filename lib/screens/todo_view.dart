@@ -112,7 +112,7 @@ class _TodoViewState extends ConsumerState<TodoView> {
             todo.title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          Spacer(),
+          Divider(),
           if (todo.hasMarkdown)
             MarkdownWidget(
               shrinkWrap: true,
