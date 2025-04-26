@@ -68,9 +68,26 @@ class _TodoViewState extends ConsumerState<TodoView> {
     ref.read(todoListProvider.notifier).removeTodo(todo);
   }
 
+  Widget addTodoButton() {
+    return FilledButton.tonal(
+      onPressed: () {
+        logger?.t('Calling todoFormPage for adding new todo');
+        makeRoute(
+          context,
+          TodoForm(
+            parent: todo,
+            logger: logger,
+          ),
+        );
+      },
+      child: Icon(Icons.add),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final String? markdown = ref.watch(todoListProvider)[todo.id]?.markdown;
+    final Map<String, TodoPair> todos = ref.watch(todoListProvider);
+    final String? markdown = todos[todo.id]?.markdown;
     return Scaffold(
       appBar: AppBar(
         // title: Text(todo.title),
@@ -105,22 +122,32 @@ class _TodoViewState extends ConsumerState<TodoView> {
       //   shrinkWrap: true,
       //   data: markdown!,
       // ),
-      body: ListView(
-        shrinkWrap: true,
-        children: [
-          Text(
-            todo.title,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          Divider(),
-          if (todo.hasMarkdown)
-            MarkdownWidget(
-              shrinkWrap: true,
-              data: markdown!,
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  todo.title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Divider(),
+                if (todo.hasMarkdown)
+                  MarkdownWidget(
+                    shrinkWrap: true,
+                    data: markdown!,
+                  ),
+              ],
             ),
+          ),
           TodoTiles(
-              // nonPinned: todo.subTasks,
-              ),
+            whenEmpty: addTodoButton(),
+            nonPinned: getTodos(
+              todo.subTasks,
+              todos,
+            ),
+          ),
         ],
       ),
     );

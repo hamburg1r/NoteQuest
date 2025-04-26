@@ -111,47 +111,51 @@ class Todo extends ConsumerWidget {
     logger?.t('Running Todo build method');
     return Scaffold(
       appBar: appbar(Text('Todo')),
-      body: TodoTiles(
-        //leading: Text('leading'),
-        //trailing: Text('trailing'),
-        whenEmpty: Center(
-          child: Text(
-            "Press on + to add todo",
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-        ),
-        nonPinnedMenu: genMenu(
-          context: context,
-          ref: ref,
-          forPinnedTodos: false,
-          forSubTask: false,
-        ),
-        pinnedMenu: genMenu(
-          context: context,
-          ref: ref,
-          forPinnedTodos: true,
-          forSubTask: false,
-        ),
-        pinned: getTodos(
-          pinnedTodoIds,
-          todoList,
-          logger,
-        ),
-        nonPinned: getTodos(
-          mainTodoIds,
-          todoList,
-          logger,
-        ),
-        onClick: (TodoPair todopair) => () {
-          makeRoute(
-            context,
-            TodoView(
-              todo: todopair.todo,
-              logger: logger,
+      body: CustomScrollView(
+        slivers: [
+          TodoTiles(
+            //leading: Text('leading'),
+            //trailing: Text('trailing'),
+            whenEmpty: Center(
+              child: Text(
+                "Press on + to add todo",
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
             ),
-          );
-        },
-        logger: logger,
+            nonPinnedMenu: genMenu(
+              context: context,
+              ref: ref,
+              forPinnedTodos: false,
+              forSubTask: false,
+            ),
+            pinnedMenu: genMenu(
+              context: context,
+              ref: ref,
+              forPinnedTodos: true,
+              forSubTask: false,
+            ),
+            pinned: getTodos(
+              pinnedTodoIds,
+              todoList,
+              logger,
+            ),
+            nonPinned: getTodos(
+              mainTodoIds,
+              todoList,
+              logger,
+            ),
+            onClick: (TodoPair todopair) => () {
+              makeRoute(
+                context,
+                TodoView(
+                  todo: todopair.todo,
+                  logger: logger,
+                ),
+              );
+            },
+            logger: logger,
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),

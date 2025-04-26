@@ -42,28 +42,24 @@ class TodoTiles extends ConsumerWidget {
       logger?.d('No data available for building the list');
       return whenEmpty;
     }
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-          delegate: SliverChildListDelegate.fixed([
-            if (pinned?.isNotEmpty ?? false) ...[
-              Text(
-                'Pinned:',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              todoList(pinned!, pinnedMenu ?? menu),
-            ],
-            if (nonPinned?.isNotEmpty ?? false) ...[
-              if (pinned?.isNotEmpty ?? false)
-                Text(
-                  'Unpinned:',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              todoList(nonPinned!, nonPinnedMenu ?? menu),
-            ],
-          ]),
-        ),
-      ],
+    return SliverList(
+      delegate: SliverChildListDelegate.fixed([
+        if (pinned?.isNotEmpty ?? false) ...[
+          Text(
+            'Pinned:',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          todoList(pinned!, pinnedMenu ?? menu),
+        ],
+        if (nonPinned?.isNotEmpty ?? false) ...[
+          if (pinned?.isNotEmpty ?? false)
+            Text(
+              'Unpinned:',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          todoList(nonPinned!, nonPinnedMenu ?? menu),
+        ],
+      ]),
     );
   }
 
