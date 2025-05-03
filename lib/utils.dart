@@ -33,6 +33,7 @@ Map<String, TodoPair>? getTodos(
 ]) {
   Map<String, TodoPair> out = {};
   logger?.i('$todoList');
+  if (todos.isEmpty) return todoList;
   for (String id in todos) {
     logger?.i('checking for $id got:${todoList[id].toString()}');
     out[id] = todoList[id]!;
