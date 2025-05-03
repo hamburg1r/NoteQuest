@@ -46,6 +46,7 @@ class TodoTiles extends ConsumerWidget {
     }
     return SliverList(
       delegate: SliverChildListDelegate.fixed([
+        leading,
         if (pinned?.isNotEmpty ?? false) ...[
           Text(
             'Pinned:',
@@ -61,6 +62,7 @@ class TodoTiles extends ConsumerWidget {
             ),
           todoList(nonPinned!, nonPinnedMenu ?? menu),
         ],
+        trailing,
       ]),
     );
   }
