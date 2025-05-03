@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:markdown_widget/widget/markdown.dart';
+import 'package:nil/nil.dart';
 import 'package:notequest/models/todo.dart';
 import 'package:notequest/screens/todo_form.dart';
 import 'package:notequest/utils.dart';
@@ -9,13 +10,13 @@ import 'package:notequest/widgets/list.dart';
 
 class TodoView extends ConsumerStatefulWidget {
   const TodoView({
-    required this.todo,
+    this.todo,
     this.parents = const [],
     this.logger,
     super.key,
   });
 
-  final TodoModel todo;
+  final TodoModel? todo;
   final List<String> parents;
   final Logger? logger;
 
@@ -24,7 +25,7 @@ class TodoView extends ConsumerStatefulWidget {
 }
 
 class _TodoViewState extends ConsumerState<TodoView> {
-  late TodoModel todo = widget.todo;
+  late TodoModel? todo = widget.todo;
   late List<String> parents = widget.parents;
   late Logger? logger = widget.logger;
 
@@ -47,7 +48,9 @@ class _TodoViewState extends ConsumerState<TodoView> {
   }
 
   void openChild(String todoId) {
-    parents.add(todo.id);
+    if (todo != null) {
+      parents = [...parents, todo!.id];
+    }
     setCurrentFromID(todoId);
   }
 
@@ -65,7 +68,7 @@ class _TodoViewState extends ConsumerState<TodoView> {
 
   void deleteCurrent() {
     previousOrExit();
-    ref.read(todoListProvider.notifier).removeTodo(todo);
+    ref.read(todoListProvider.notifier).removeTodo(todo!);
   }
 
   Widget addTodoButton() {
@@ -87,7 +90,15 @@ class _TodoViewState extends ConsumerState<TodoView> {
   @override
   Widget build(BuildContext context) {
     final Map<String, TodoPair> todos = ref.watch(todoListProvider);
-    final String? markdown = todos[todo.id]?.markdown;
+    late final String? markdown;
+    late final List<String> taskList;
+    if (todo != null) {
+      markdown = todos[todo!.id]?.markdown;
+      taskList = todo!.subTasks;
+    } else {
+      markdown = null;
+      taskList = [];
+    }
     return Scaffold(
       appBar: AppBar(
         // title: Text(todo.title),
@@ -99,23 +110,25 @@ class _TodoViewState extends ConsumerState<TodoView> {
           icon: Icon(Icons.arrow_back),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              makeRoute(
-                context,
-                TodoForm(
-                  id: todo.id,
-                  logger: logger,
-                ),
-              );
-              setState(() {});
-            },
-            icon: Icon(Icons.edit),
-          ),
-          IconButton(
-            onPressed: deleteCurrent,
-            icon: Icon(Icons.delete),
-          )
+          if (todo != null)
+            IconButton(
+              onPressed: () {
+                makeRoute(
+                  context,
+                  TodoForm(
+                    id: todo!.id,
+                    logger: logger,
+                  ),
+                );
+                setState(() {});
+              },
+              icon: Icon(Icons.edit),
+            ),
+          if (todo != null)
+            IconButton(
+              onPressed: deleteCurrent,
+              icon: Icon(Icons.delete),
+            )
         ],
       ),
       // body: MarkdownWidget(
@@ -124,25 +137,41 @@ class _TodoViewState extends ConsumerState<TodoView> {
       // ),
       body: CustomScrollView(
         slivers: [
-          SliverList(
-            delegate: SliverChildListDelegate.fixed([
-              Text(
-                todo.title,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              Divider(),
-              if (todo.hasMarkdown)
-                MarkdownWidget(
-                  shrinkWrap: true,
-                  data: markdown!,
+          if (todo != null)
+            SliverList(
+              delegate: SliverChildListDelegate.fixed([
+                Text(
+                  todo!.title,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
-            ]),
-          ),
+                Divider(),
+                if (todo!.hasMarkdown) ...[
+                  MarkdownWidget(
+                    shrinkWrap: true,
+                    data: markdown!,
+                  ),
+                  Divider(),
+                ],
+              ]),
+            ),
           TodoTiles(
-            whenEmpty: addTodoButton(),
-            nonPinned: getTodos(
-              todo.subTasks,
-              todos,
+            onClick: (todopair) => () {
+              openChild(todopair.todo.id);
+            },
+            whenEmpty:
+                todo != null ? addTodoButton() : Text("No todos available"),
+            trailing: todo != null ? addTodoButton() : nil,
+            nonPinned: taskList.isNotEmpty || todo == null
+                ? getTodos(
+                    taskList,
+                    todos,
+                  )
+                : null,
+            nonPinnedMenu: genMenu(
+              context: context,
+              ref: ref,
+              forPinnedTodos: false,
+              forSubTask: true,
             ),
           ),
         ],
