@@ -82,7 +82,10 @@ class TodoTiles extends ConsumerWidget {
         TodoPair todoPair = todos[id]!;
         return ListTile(
           onTap: onClick != null ? onClick!(todoPair) : null,
-          leading: Text((index).toString()),
+          leading: Text(
+            (index + 1).toString(),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
