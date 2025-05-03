@@ -8,7 +8,7 @@ import 'package:notequest/utils.dart';
 import '../widgets/list.dart';
 
 class Todo extends ConsumerWidget {
-  final Function(Text) appbar;
+  final Function(Text, List<Widget>) appbar;
   final Logger? logger;
   const Todo(
     this.appbar, {
@@ -26,7 +26,23 @@ class Todo extends ConsumerWidget {
 
     logger?.t('Running Todo build method');
     return Scaffold(
-      appBar: appbar(Text('Todo')),
+      appBar: appbar(
+        Text('Todo'),
+        [
+          IconButton(
+            onPressed: () {
+              makeRoute(
+                context,
+                TodoView(
+                  logger: logger,
+                ),
+              );
+            },
+            icon: Icon(Icons.notes),
+            tooltip: "All notes",
+          ),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           TodoTiles(
@@ -50,16 +66,20 @@ class Todo extends ConsumerWidget {
               forPinnedTodos: true,
               forSubTask: false,
             ),
-            pinned: getTodos(
-              pinnedTodoIds,
-              todoList,
-              logger,
-            ),
-            nonPinned: getTodos(
-              mainTodoIds,
-              todoList,
-              logger,
-            ),
+            pinned: pinnedTodoIds.isNotEmpty
+                ? getTodos(
+                    pinnedTodoIds,
+                    todoList,
+                    logger,
+                  )
+                : null,
+            nonPinned: todoList.isNotEmpty
+                ? getTodos(
+                    mainTodoIds,
+                    todoList,
+                    logger,
+                  )
+                : null,
             onClick: (TodoPair todopair) => () {
               makeRoute(
                 context,

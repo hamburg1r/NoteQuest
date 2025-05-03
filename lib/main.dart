@@ -117,7 +117,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     logger?.t('Running HomeScreen build method');
-    appBar(title) => AppBar(
+    appBar(
+      Widget title, [
+      List<Widget> actions = const [],
+    ]) =>
+        AppBar(
           title: title,
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
@@ -134,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          actions: actions,
         );
     logger?.t('Adding scaffolds in screen list');
     var screens = <Widget>[
