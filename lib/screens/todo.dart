@@ -57,14 +57,10 @@ class Todo extends ConsumerWidget {
             nonPinnedMenu: genMenu(
               context: context,
               ref: ref,
-              forPinnedTodos: false,
-              forSubTask: false,
             ),
             pinnedMenu: genMenu(
               context: context,
               ref: ref,
-              forPinnedTodos: true,
-              forSubTask: false,
             ),
             pinned: pinnedTodoIds.isNotEmpty
                 ? getTodos(

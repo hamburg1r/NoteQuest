@@ -46,44 +46,47 @@ Map<String, TodoPair>? getTodos(
 MenuAnchor Function(TodoPair todo) genMenu({
   required BuildContext context,
   required WidgetRef ref,
-  required bool forPinnedTodos,
-  required bool forSubTask,
   Logger? logger,
 }) {
   return (TodoPair todo) {
+    var todoMSNotifier = ref.read(todoMainScreenProvider.notifier);
+    Map<String, List<String>> todoMS = ref.watch(todoMainScreenProvider);
+
+    bool existsOnMainScreen = todoMS['main']!.contains(todo.todo.id);
+    bool isPinned = todoMS['pinned']!.contains(todo.todo.id);
     logger?.t('Creating menu button for todo list items');
     return MenuAnchor(
       // style: MenuStyle(maximumSize: MaterialStateProperty),
       menuChildren: [
-        if (forPinnedTodos)
+        if (isPinned)
           MenuItemButton(
             onPressed: () {
               logger?.d('Unpinning ${todo.todo.id}');
-              ref.read(todoMainScreenProvider.notifier).unpin(todo.todo.id);
+              todoMSNotifier.unpin(todo.todo.id);
             },
             child: const Text('Unpin'),
           ),
-        if (!forPinnedTodos)
+        if (!isPinned)
           MenuItemButton(
             onPressed: () {
               logger?.d('Pinning ${todo.todo.id}');
-              ref.read(todoMainScreenProvider.notifier).pin(todo.todo.id);
+              todoMSNotifier.pin(todo.todo.id);
             },
             child: const Text('Pin'),
           ),
-        if (!forPinnedTodos && !forSubTask)
+        if (existsOnMainScreen)
           MenuItemButton(
             onPressed: () {
               logger?.d('Removing ${todo.todo.id} from main screen');
-              ref.read(todoMainScreenProvider.notifier).remove(todo.todo.id);
+              todoMSNotifier.remove(todo.todo.id);
             },
             child: const Text('Remove from main Screen'),
           ),
-        if (forPinnedTodos)
+        if (!existsOnMainScreen)
           MenuItemButton(
             onPressed: () {
-              logger?.d('Editing ${todo.todo.id}');
-              ref.read(todoMainScreenProvider.notifier).add(todo.todo.id);
+              logger?.d('Adding ${todo.todo.id} to main screen');
+              todoMSNotifier.add(todo.todo.id);
             },
             child: const Text('Add to main Screen'),
           ),

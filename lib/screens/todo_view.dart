@@ -170,8 +170,6 @@ class _TodoViewState extends ConsumerState<TodoView> {
             nonPinnedMenu: genMenu(
               context: context,
               ref: ref,
-              forPinnedTodos: false,
-              forSubTask: true,
             ),
           ),
         ],
