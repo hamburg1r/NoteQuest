@@ -27,13 +27,16 @@ class TodoView extends ConsumerStatefulWidget {
 class _TodoViewState extends ConsumerState<TodoView> {
   late TodoModel? todo = widget.todo;
   late List<String> parents = widget.parents;
-  late Logger? logger = widget.logger;
+  late List<String> taskList = [];
+  late String? markdown;
+  late final Logger? logger = widget.logger;
+  Map<String, TodoPair> todos = {};
 
   void setCurrentFromID(String todoId) {
     try {
       // logger?.t()
       setState(() {
-        todo = ref.watch(todoListProvider)[todoId]!.todo;
+        todo = todos[todoId]!.todo;
       });
     } catch (nullError) {
       ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -90,9 +93,8 @@ class _TodoViewState extends ConsumerState<TodoView> {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, TodoPair> todos = ref.watch(todoListProvider);
-    late final String? markdown;
-    late final List<String> taskList;
+    todos = ref.watch(todoListProvider);
+    todo = todos[todo?.id]?.todo;
     if (todo != null) {
       markdown = todos[todo!.id]?.markdown;
       taskList = todo!.subTasks;
@@ -124,11 +126,24 @@ class _TodoViewState extends ConsumerState<TodoView> {
               },
               icon: Icon(Icons.edit),
             ),
-          if (todo != null)
+          if (todo != null) ...[
             IconButton(
               onPressed: deleteCurrent,
               icon: Icon(Icons.delete),
-            )
+            ),
+            IconButton(
+              onPressed: () {
+                makeRoute(
+                  context,
+                  TodoInfo(
+                    todo: todo!,
+                    logger: logger,
+                  ),
+                );
+              },
+              icon: Icon(Icons.info),
+            ),
+          ],
         ],
       ),
       // body: MarkdownWidget(
@@ -170,9 +185,65 @@ class _TodoViewState extends ConsumerState<TodoView> {
             nonPinnedMenu: genMenu(
               context: context,
               ref: ref,
+              parent: todo?.id,
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox.square(
+              dimension: 8,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TodoInfo extends StatelessWidget {
+  const TodoInfo({
+    required this.todo,
+    super.key,
+    this.logger,
+  });
+  final TodoModel todo;
+  final Logger? logger;
+
+  @override
+  Widget build(BuildContext context) {
+    logger?.i("Using Todo: $todo");
+    var textStyle = Theme.of(context).textTheme;
+    tile(String title, String info) {
+      return [
+        Text(
+          title,
+          style: textStyle.headlineSmall,
+        ),
+        Text(
+          info,
+          style: textStyle.labelLarge,
+        ),
+        Divider(),
+      ];
+    }
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: ListView(
+        children: [
+          ...tile("ID:", todo.id),
+          ...tile("Parents:", todo.parents.join('\n')),
+          if (todo.scheduledTime != null)
+            ...tile("Scheduled Time", customDateFormat(todo.scheduledTime!)),
+          if (todo.dueTime != null)
+            ...tile("Due Time", customDateFormat(todo.dueTime!)),
+        ],
+        // children: [
+        //   // title("ID:"),
+        //   // info(todo.id),
+        //   // Divider(),
+        //   // title("ID:"),
+        //   // ...tile("ID", todo.id),
+        // ],
       ),
     );
   }
