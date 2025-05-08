@@ -136,24 +136,25 @@ class TodoList extends _$TodoList {
     if (update) updateState();
   }
 
+  // FIXME: add logic for passing either todomodel or id
   void addTodo(
-    TodoModel todo, {
+    TodoModel todoModel, {
     String? markdown,
-    TodoModel? parent,
+    TodoModel? parentModel,
     bool update = true,
   }) {
     logger?.t('Updating todos');
-    _todoBox.put(todo.id, todo.toJson());
-    if (parent != null) {
+    _todoBox.put(todoModel.id, todoModel.toJson());
+    if (parentModel != null) {
       logger?.d('Adding task to a parent');
-      logger?.i('Parent: ${parent.id}');
-      addParent(todo, parent.id, update: false);
-      addSubTask(parent, todo.id, update: false);
+      logger?.i('Parent: ${parentModel.id}');
+      addParent(todoModel, parentModel.id, update: false);
+      addSubTask(parentModel, todoModel.id, update: false);
     } else {
       logger?.d('Adding task to main screen');
-      ref.read(todoMainScreenProvider.notifier).add(todo.id);
+      ref.read(todoMainScreenProvider.notifier).add(todoModel.id);
     }
-    if (markdown != null) _todoMarkdowns.put(todo.id, markdown);
+    if (markdown != null) _todoMarkdowns.put(todoModel.id, markdown);
     if (update) updateState();
   }
 

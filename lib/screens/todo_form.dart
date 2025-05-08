@@ -198,7 +198,7 @@ class _TodoFormState extends ConsumerState<TodoForm> {
                       ref.read(todoListProvider.notifier).addTodo(
                             todo,
                             markdown: markdown,
-                            parent: widget.parent,
+                            parentModel: widget.parent,
                           );
                       Navigator.pop(context);
                     } else {
