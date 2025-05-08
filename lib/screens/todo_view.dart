@@ -232,11 +232,23 @@ class TodoInfo extends StatelessWidget {
       body: ListView(
         children: [
           ...tile("ID:", todo.id),
-          ...tile("Parents:", todo.parents.join('\n')),
+          if (todo.parents.isNotEmpty)
+            ...tile("Parents:", todo.parents.join('\n')),
+          if (todo.subTasks.isNotEmpty)
+            ...tile("Parents:", todo.subTasks.join('\n')),
           if (todo.scheduledTime != null)
             ...tile("Scheduled Time", customDateFormat(todo.scheduledTime!)),
           if (todo.dueTime != null)
             ...tile("Due Time", customDateFormat(todo.dueTime!)),
+          ...tile("State", todo.state.name.toUpperCase()),
+          ...tile("Priority", todo.priority.name.toUpperCase()),
+          if (todo.hasMarkdown) ...[
+            Text(
+              "Contains markdown",
+              style: textStyle.headlineSmall,
+            ),
+            Divider()
+          ],
         ],
         // children: [
         //   // title("ID:"),
