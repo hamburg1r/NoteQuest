@@ -163,12 +163,12 @@ class TodoList extends _$TodoList {
   }) {
     logger?.t('Removing todo: ${todo.id}');
     for (String parent in todo.parents) {
-      var parentTask = ref.watch(todoListProvider)[parent]!.todo;
+      var parentTask = state[parent]!.todo;
       removeSubTask(parentTask, todo.id, update: false);
     }
 
     for (String subTask in todo.subTasks) {
-      var subTaskTodo = ref.watch(todoListProvider)[subTask]!.todo;
+      var subTaskTodo = state[subTask]!.todo;
       removeParent(subTaskTodo, todo.id, update: false);
     }
     ref.read(todoMainScreenProvider.notifier).remove(todo.id);
