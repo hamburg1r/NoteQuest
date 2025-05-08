@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -46,14 +48,19 @@ Map<String, TodoPair>? getTodos(
 MenuAnchor Function(TodoPair todo) genMenu({
   required BuildContext context,
   required WidgetRef ref,
+  String? parent,
   Logger? logger,
 }) {
   return (TodoPair todo) {
-    var todoMSNotifier = ref.read(todoMainScreenProvider.notifier);
-    Map<String, List<String>> todoMS = ref.watch(todoMainScreenProvider);
+    var _todoMainScreenNotifier = ref.read(todoMainScreenProvider.notifier);
+    var _todoMainScreenProvider = ref.watch(todoMainScreenProvider);
+    var _todoListNotifier = ref.read(todoListProvider.notifier);
+    var _todoListProvider = ref.watch(todoListProvider);
 
-    bool existsOnMainScreen = todoMS['main']!.contains(todo.todo.id);
-    bool isPinned = todoMS['pinned']!.contains(todo.todo.id);
+    bool existsOnMainScreen =
+        _todoMainScreenProvider['main']!.contains(todo.todo.id);
+    bool isPinned = _todoMainScreenProvider['pinned']!.contains(todo.todo.id);
+
     logger?.t('Creating menu button for todo list items');
     return MenuAnchor(
       // style: MenuStyle(maximumSize: MaterialStateProperty),
@@ -62,7 +69,7 @@ MenuAnchor Function(TodoPair todo) genMenu({
           MenuItemButton(
             onPressed: () {
               logger?.d('Unpinning ${todo.todo.id}');
-              todoMSNotifier.unpin(todo.todo.id);
+              _todoMainScreenNotifier.unpin(todo.todo.id);
             },
             child: const Text('Unpin'),
           ),
@@ -70,7 +77,7 @@ MenuAnchor Function(TodoPair todo) genMenu({
           MenuItemButton(
             onPressed: () {
               logger?.d('Pinning ${todo.todo.id}');
-              todoMSNotifier.pin(todo.todo.id);
+              _todoMainScreenNotifier.pin(todo.todo.id);
             },
             child: const Text('Pin'),
           ),
@@ -78,7 +85,7 @@ MenuAnchor Function(TodoPair todo) genMenu({
           MenuItemButton(
             onPressed: () {
               logger?.d('Removing ${todo.todo.id} from main screen');
-              todoMSNotifier.remove(todo.todo.id);
+              _todoMainScreenNotifier.remove(todo.todo.id);
             },
             child: const Text('Remove from main Screen'),
           ),
@@ -86,9 +93,21 @@ MenuAnchor Function(TodoPair todo) genMenu({
           MenuItemButton(
             onPressed: () {
               logger?.d('Adding ${todo.todo.id} to main screen');
-              todoMSNotifier.add(todo.todo.id);
+              _todoMainScreenNotifier.add(todo.todo.id);
             },
             child: const Text('Add to main Screen'),
+          ),
+        if (parent != null)
+          MenuItemButton(
+            onPressed: () {
+              logger?.d('Removing ${todo.todo.id} from $parent');
+              _todoListNotifier.removeSubTask(
+                _todoListProvider[parent]!.todo,
+                todo.todo.id,
+              );
+              _todoListNotifier.removeParent(todo.todo, parent);
+            },
+            child: const Text('Remove Subtask'),
           ),
         MenuItemButton(
           onPressed: () {
