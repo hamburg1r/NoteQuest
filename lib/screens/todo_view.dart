@@ -112,6 +112,7 @@ class _TodoViewState extends ConsumerState<TodoView> {
           },
           icon: Icon(Icons.arrow_back),
         ),
+        title: todo == null ? Text("Available todos") : null,
         actions: [
           if (todo != null)
             IconButton(
