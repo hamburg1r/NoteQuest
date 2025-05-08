@@ -67,8 +67,9 @@ class _TodoViewState extends ConsumerState<TodoView> {
   }
 
   void deleteCurrent() {
+    var trash = todo!;
     previousOrExit();
-    ref.read(todoListProvider.notifier).removeTodo(todo!);
+    ref.read(todoListProvider.notifier).removeTodo(trash);
   }
 
   Widget addTodoButton() {
@@ -120,7 +121,6 @@ class _TodoViewState extends ConsumerState<TodoView> {
                     logger: logger,
                   ),
                 );
-                setState(() {});
               },
               icon: Icon(Icons.edit),
             ),
