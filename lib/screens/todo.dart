@@ -69,7 +69,7 @@ class Todo extends ConsumerWidget {
                     logger,
                   )
                 : null,
-            nonPinned: todoList.isNotEmpty
+            nonPinned: mainTodoIds.isNotEmpty
                 ? getTodos(
                     mainTodoIds,
                     todoList,
