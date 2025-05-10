@@ -65,7 +65,7 @@ const _$TodoStateEnumMap = {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$todoListHash() => r'84769f1ff862ea213b7567cced9610762bb8b51c';
+String _$todoListHash() => r'344cb85bd70d97fbb041b9d76781bbf6c51028db';
 
 /// See also [TodoList].
 @ProviderFor(TodoList)

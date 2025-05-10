@@ -31,6 +31,8 @@ void main() async {
   logger?.t('opened markdowns hive box');
   await Hive.openBox<List<String>>('mainScreenTodos');
   logger?.t('opened mainScreenTodos hive box');
+  await Hive.openBox<String>('documents');
+  logger?.t('opened documents hive box');
 
   runApp(ProviderScope(
     child: App(
