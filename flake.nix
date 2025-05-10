@@ -37,7 +37,7 @@
 				# Try connecting ADB to each port
 				for PORT in "''${PORTS[@]}"; do
 					echo "Attempting to connect ADB to $TARGET_IP:$PORT..."
-					adb connect "$TARGET_IP:$PORT" && echo "Connected!!!" && exit 0
+					adb connect "$TARGET_IP:$PORT" | tee /dev/stderr | grep -q "connected to" && echo "Connected!!!" && exit 0
 				done
 			'';
 
