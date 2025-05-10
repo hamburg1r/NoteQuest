@@ -5,6 +5,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:notequest/screens/documents.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -149,31 +150,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         appBar,
         logger: logger,
       ),
-      Scaffold(
-          appBar: AppBar(
-            title: Text("1"),
-            leading: IconButton(
-              onPressed: _handleMenuButtonPressed,
-              icon: ValueListenableBuilder<AdvancedDrawerValue>(
-                valueListenable: _advancedDrawerController,
-                builder: (_, value, __) {
-                  return AnimatedSwitcher(
-                    duration: Duration(milliseconds: 250),
-                    child: Icon(
-                      value.visible ? Icons.clear : Icons.menu,
-                      key: ValueKey<bool>(value.visible),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          body: placeholder,
-          floatingActionButton: FloatingActionButton(
-            shape: CircleBorder(),
-            onPressed: () => print("sup sucka"),
-            child: Icon(Icons.add),
-          )),
+      Documents(
+        appBar,
+        logger: logger,
+      ),
       Scaffold(
           appBar: AppBar(
             title: Text("2"),
