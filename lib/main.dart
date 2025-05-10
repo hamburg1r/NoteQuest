@@ -6,8 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'screens/todo.dart';
+
+part 'main.g.dart';
 
 void main() async {
   Logger? logger;
@@ -97,7 +100,7 @@ class App extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
     super.key,
     this.logger,
@@ -105,17 +108,17 @@ class HomeScreen extends StatefulWidget {
   final Logger? logger;
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _advancedDrawerController = AdvancedDrawerController();
-  int widgetIndex = 0;
   final placeholder = Center(child: Text("placeholder"));
   late final logger = widget.logger;
 
   @override
   Widget build(BuildContext context) {
+    int widgetIndex = ref.watch(indexStorageProvider);
     logger?.t('Running HomeScreen build method');
     appBar(
       Widget title, [
@@ -242,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   if (widgetIndex != 0) {
                     setState(() {
-                      widgetIndex = 0;
+                      ref.read(indexStorageProvider.notifier).update(0);
                     });
                   }
                 },
@@ -253,23 +256,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   if (widgetIndex != 1) {
                     setState(() {
-                      widgetIndex = 1;
+                      ref.read(indexStorageProvider.notifier).update(1);
                     });
                   }
                 },
-                leading: Icon(Icons.calendar_month),
-                title: Text('Calendar'),
+                leading: Icon(Icons.folder),
+                title: Text('Documents'),
               ),
               ListTile(
                 onTap: () {
                   if (widgetIndex != 2) {
                     setState(() {
-                      widgetIndex = 2;
+                      ref.read(indexStorageProvider.notifier).update(2);
                     });
                   }
                 },
-                leading: Icon(Icons.favorite),
-                title: Text('Favourites'),
+                leading: Icon(Icons.calendar_month),
+                title: Text('Calendar'),
               ),
               ListTile(
                 onTap: () {},
@@ -289,5 +292,26 @@ class _HomeScreenState extends State<HomeScreen> {
     // NOTICE: Manage Advanced Drawer state through the Controller.
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
+  }
+}
+
+@riverpod
+class IndexStorage extends _$IndexStorage {
+  @override
+  int build() {
+    // Initial value
+    return 0;
+  }
+
+  void update(int value) {
+    state = value;
+  }
+
+  void increment() {
+    state++;
+  }
+
+  void decrement() {
+    state--;
   }
 }
