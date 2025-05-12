@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:mime/mime.dart';
+import 'package:notequest/utils.dart';
+import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:photo_view/photo_view.dart';
 
 part 'documents.g.dart';
 
@@ -18,11 +23,16 @@ class Documents extends ConsumerStatefulWidget {
     this.logger,
   });
 
+  @override
+  ConsumerState<Documents> createState() => _DocumentsState();
+}
+
+class _DocumentsState extends ConsumerState<Documents> {
   Future<void> requestMediaPermissions() async {
     Map<Permission, PermissionStatus> statuses;
     statuses = await [Permission.manageExternalStorage].request();
 
-    logger?.d(statuses);
+    widget.logger?.d(statuses);
 
     if (statuses[Permission.manageExternalStorage]!.isDenied) {
       openAppSettings();
@@ -31,34 +41,25 @@ class Documents extends ConsumerStatefulWidget {
     }
   }
 
-  @override
-  ConsumerState<Documents> createState() => _DocumentsState();
-}
-
-class _DocumentsState extends ConsumerState<Documents> {
-  String? folder;
-
-  ListTile createTile(String path) {
-    var mime = lookupMimeType(path);
-    ListTile res = ListTile(
-      title: Text(path),
-    );
-    if (mime == 'text/plain') {
-      res = ListTile(
-        title: Text(path),
-      );
-    }
-    return res;
-  }
-
-  Widget createFolders(String name, int items) {
+  Widget createFolders(
+    String name,
+    int items,
+    BuildContext context,
+    DocumentsStore documentNotifier,
+  ) {
     return ListTile(
       leading: Icon(Icons.folder),
       title: Text(name),
       subtitle: Text('$items items'),
       onTap: () {
-        setState(() {
-          folder = name;
+        makeRoute(
+          context,
+          FilesView(
+            folder: name,
+            title: name,
+          ),
+        ).then((_) {
+          setState(() {});
         });
       },
       trailing: MenuAnchor(
@@ -66,7 +67,8 @@ class _DocumentsState extends ConsumerState<Documents> {
           if (items > 0)
             MenuItemButton(
               onPressed: () async {
-                await ref.read(documentsStoreProvider.notifier).empty(name);
+                await documentNotifier.empty(name);
+                setState(() {});
               },
               child: Row(
                 children: [
@@ -77,9 +79,7 @@ class _DocumentsState extends ConsumerState<Documents> {
             ),
           MenuItemButton(
             onPressed: () async {
-              await ref
-                  .read(documentsStoreProvider.notifier)
-                  .deletefolder(name);
+              await documentNotifier.deletefolder(name);
             },
             child: Row(
               children: [
@@ -108,129 +108,303 @@ class _DocumentsState extends ConsumerState<Documents> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<String>> documents = ref.watch(documentsStoreProvider);
+    Map<String, Set<String>> documents = ref.watch(documentsStoreProvider);
     widget.logger?.i("documents: $documents");
     var documentsNotifier = ref.read(documentsStoreProvider.notifier);
 
     widget.logger?.d('Build method running');
-    widget.requestMediaPermissions();
+    requestMediaPermissions();
     return Scaffold(
-      appBar: folder == null
-          ? widget.appbar(
-              Text("Documents"),
-              [
-                // IconButton(
-                //   onPressed: () {
-                //   },
-                //   icon: Icon(Icons.delete),
-                //   tooltip: 'Clear All',
-                // ),
-                MenuAnchor(
-                  menuChildren: [
-                    MenuItemButton(
-                      onPressed: () async {
-                        await documentsNotifier.deleteAll();
-                      },
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete),
-                          Text('Delete all'),
-                        ],
-                      ),
-                    )
-                  ],
-                  // child: Icon(Icons.explicit),
-                  builder: (_, MenuController controller, Widget? child) {
-                    return IconButton(
-                      //focusNode: _buttonFocusNode,
-                      onPressed: () {
-                        if (controller.isOpen) {
-                          controller.close();
-                        } else {
-                          controller.open();
-                        }
-                      },
-                      icon: const Icon(Icons.more_vert),
-                    );
-                  },
-                ),
-              ],
-            )
-          : AppBar(
-              leading: IconButton(
-                onPressed: () {
-                  setState(() {
-                    folder = null;
-                  });
-                },
-                icon: Icon(Icons.arrow_back),
-              ),
-            ),
+      appBar: widget.appbar(
+        Text("Documents"),
+        [
+          IconButton(
+            onPressed: () async {
+              await documentsNotifier.deleteAll();
+            },
+            icon: Icon(Icons.clear_all),
+          )
+          // MenuAnchor(
+          //   menuChildren: [
+          //     MenuItemButton(
+          //       onPressed: () async {
+          //         await documentsNotifier.deleteAll();
+          //       },
+          //       child: Row(
+          //         children: [
+          //           Icon(Icons.delete),
+          //           Text('Delete all'),
+          //         ],
+          //       ),
+          //     )
+          //   ],
+          //   // child: Icon(Icons.explicit),
+          //   builder: (_, MenuController controller, Widget? child) {
+          //     return IconButton(
+          //       //focusNode: _buttonFocusNode,
+          //       onPressed: () {
+          //         if (controller.isOpen) {
+          //           controller.close();
+          //         } else {
+          //           controller.open();
+          //         }
+          //       },
+          //       icon: const Icon(Icons.more_vert),
+          //     );
+          //   },
+          // ),
+        ],
+      ),
       body: ListView.builder(
-        itemCount: folder == null
-            ? documents.keys.length
-            : documents[folder]?.length ?? 0,
+        itemCount: documents.keys.length,
         itemBuilder: (BuildContext ctx, int index) {
-          if (folder == null) {
-            return createFolders(
-              documents.keys.elementAt(index),
-              documents[documents.keys.elementAt(index)]?.length ?? 0,
-            );
-          }
-          return createTile(documents[folder]![index]);
+          return createFolders(
+            documents.keys.elementAt(index),
+            documents[documents.keys.elementAt(index)]?.length ?? 0,
+            context,
+            documentsNotifier,
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
         onPressed: () async {
-          if (folder == null) {
-            showDialog(
-              context: context,
-              builder: (context) {
-                final TextEditingController _controller =
-                    TextEditingController();
-                return AlertDialog(
-                  title: Text('Enter Folder Name'),
-                  content: TextField(
-                    autofocus: true,
-                    controller: _controller,
-                    decoration: InputDecoration(hintText: "Folder Name"),
+          showDialog(
+            context: context,
+            builder: (context) {
+              final TextEditingController _controller = TextEditingController();
+              return AlertDialog(
+                title: Text('Enter Folder Name'),
+                content: TextField(
+                  autofocus: true,
+                  controller: _controller,
+                  decoration: InputDecoration(hintText: "Folder Name"),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Cancel'),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cancel'),
+                  TextButton(
+                    onPressed: () {
+                      String folderName = _controller.text;
+                      Navigator.of(context).pop();
+                      documentsNotifier.addMultiple([], folderName);
+                    },
+                    child: Text('Create'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class FilesView extends ConsumerStatefulWidget {
+  final String folder;
+  final String? title;
+  const FilesView({
+    required this.folder,
+    this.title,
+    super.key,
+  });
+
+  @override
+  ConsumerState<FilesView> createState() => _FilesViewState();
+}
+
+class _FilesViewState extends ConsumerState<FilesView> {
+  Future<ListTile> createTile(
+    String path,
+    DocumentsStore documentsNotifier,
+    BuildContext ctx,
+  ) async {
+    File file = File(path);
+    var mime = lookupMimeType(path);
+    String name = basenameWithoutExtension(path);
+    String ext = extension(path);
+
+    Widget heading = Text(
+      'File: $name$ext',
+      style: Theme.of(ctx).textTheme.titleSmall,
+    );
+    Widget? content = Text(mime ?? 'unknown mime type');
+    Widget body = Center(
+      child: Text(
+        "No preview available",
+        style: Theme.of(ctx).textTheme.displaySmall,
+      ),
+    );
+
+    if (mime == 'text/plain') {
+      var lines = await file.readAsLines();
+      if (lines.length >= 2) {
+        content = Text('${lines[0]}\n${lines[1]}\n...');
+      } else if (lines.isNotEmpty) {
+        content = Text(lines.join('\n'));
+      } else {
+        content = Text('Empty');
+      }
+      // FIXME: move to a different widget
+      body = FutureBuilder<String>(
+        future: file.readAsString(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final lines = snapshot.data!.split('\n');
+            return Scrollbar(
+              thumbVisibility: true,
+              child: ListView.builder(
+                itemCount: lines.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${index + 1}'.padLeft(4, ' '),
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            lines[index],
+                            style: const TextStyle(fontSize: 14),
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: () {
-                        String folderName = _controller.text;
-                        Navigator.of(context).pop();
-                        documentsNotifier.addMultiple([], folderName);
-                      },
-                      child: Text('Create'),
-                    ),
-                  ],
-                );
+                  );
+                },
+              ),
+            );
+          } else {
+            return const Center(child: Text('File is empty'));
+          }
+        },
+      );
+    } else if (mime?.startsWith('image/') ?? false) {
+      content = LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final size = constraints.maxWidth; // Get the max width of the parent
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: SizedBox.square(
+              dimension: size, // Make it square and take the full width
+              child: Image.file(
+                file,
+                fit: BoxFit.cover, // Ensures it fills the square proportionally
+              ),
+            ),
+          );
+        },
+      );
+      body = PhotoView(
+        imageProvider: FileImage(file),
+        enableRotation: true,
+      );
+    }
+    return ListTile(
+      title: heading,
+      subtitle: content,
+      onTap: () {
+        makeRoute(
+          ctx,
+          Scaffold(
+            appBar: AppBar(
+              title: Text(name),
+            ),
+            body: body,
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, Set<String>> documents = ref.watch(documentsStoreProvider);
+    var documentsNotifier = ref.read(documentsStoreProvider.notifier);
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
+        title: widget.title != null ? Text(widget.title!) : null,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await documentsNotifier.empty(widget.folder);
+              setState(() {});
+            },
+            icon: Icon(Icons.clear_all),
+          ),
+        ],
+      ),
+      body: Scrollbar(
+        thumbVisibility: true,
+        child: ListView.separated(
+          itemCount: documents[widget.folder]?.length ?? 0,
+          itemBuilder: (BuildContext context, int index) {
+            return FutureBuilder<Widget>(
+              future: createTile(
+                documents[widget.folder]!.elementAt(index),
+                documentsNotifier,
+                context,
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return ListTile(
+                    title: Text('Error loading item'),
+                    subtitle: Text(snapshot.error.toString()),
+                  );
+                } else {
+                  return snapshot.data!;
+                }
               },
             );
-            return;
-          }
-
-          var res = await FilePicker.platform.pickFiles(
+          },
+          separatorBuilder: (context, index) => Divider(),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        shape: CircleBorder(),
+        onPressed: () {
+          FilePicker.platform
+              .pickFiles(
             allowMultiple: true,
-          );
-          while (res?.paths.contains(null) ?? false) {
-            res?.paths.remove(null);
-          }
-          widget.logger?.d(res?.paths);
-          // res?.paths.forEach((file) {
-          //   if (file == null) return;
-          //   documentsNotifier.add(file, folder!);
-          // });
-          documentsNotifier.addMultiple(
-              res?.paths.cast<String>() ?? [], folder!);
+          )
+              .then((res) {
+            while (res?.paths.contains(null) ?? false) {
+              res?.paths.remove(null);
+            }
+            documentsNotifier.addMultiple(
+              res?.paths.cast<String>() ?? [],
+              widget.folder,
+            );
+            setState(() {});
+          });
         },
         child: Icon(Icons.add),
       ),
@@ -244,39 +418,39 @@ class DocumentsStore extends _$DocumentsStore {
   final Logger _logger = Logger();
 
   @override
-  Map<String, List<String>> build() {
+  Map<String, Set<String>> build() {
     return updateState();
   }
 
   Future<void> add(String file, String folder) async {
-    List<String> newList = [...?state[folder], file];
-    await _documentBox.put(folder, newList);
+    Set<String> newList = {...?state[folder], file};
+    await _documentBox.put(folder, newList.toList());
     state[folder] = newList;
   }
 
   Future<void> addMultiple(List<String> files, String folder) async {
-    List<String> newList = [...?state[folder], ...files];
-    await _documentBox.put(folder, newList);
+    Set<String> newList = {...?state[folder], ...files};
+    await _documentBox.put(folder, newList.toList());
     state[folder] = newList;
   }
 
   Future<void> delete(String file, String folder) async {
-    List<String> newList = [...?state[folder]]..remove(file);
-    await _documentBox.put(folder, newList);
+    Set<String> newList = {...?state[folder]}..remove(file);
+    await _documentBox.put(folder, newList.toList());
     state[folder] = newList;
   }
 
   Future<void> deletefolder(String folder) async {
     _logger.d('Deleting folder');
     await _documentBox.delete(folder);
-    final updatedMap = Map<String, List<String>>.from(state);
+    final updatedMap = Map<String, Set<String>>.from(state);
     updatedMap.remove(folder);
     state = updatedMap;
   }
 
   Future<void> empty(String folder) async {
     await _documentBox.put(folder, []);
-    state[folder] = [];
+    state[folder] = {};
   }
 
   Future<void> deleteAll() async {
@@ -285,12 +459,13 @@ class DocumentsStore extends _$DocumentsStore {
     state = {};
   }
 
-  Map<String, List<String>> updateState() {
-    Map<String, List<String>> state = {};
+  Map<String, Set<String>> updateState() {
+    Map<String, Set<String>> state = {};
     for (String key in _documentBox.keys.toList().map((val) {
       return val.toString();
     })) {
-      if (_documentBox.get(key) != null) state[key] = _documentBox.get(key)!;
+      if (_documentBox.get(key) != null)
+        state[key] = _documentBox.get(key)!.toSet();
     }
     return state;
   }

@@ -6,12 +6,12 @@ part of 'documents.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$documentsStoreHash() => r'4b4c9bf6f4b95dec8964b24f5b6a207bbdb3ea61';
+String _$documentsStoreHash() => r'7570c012b3047cc68c17f488514c25910f19632f';
 
 /// See also [DocumentsStore].
 @ProviderFor(DocumentsStore)
 final documentsStoreProvider = AutoDisposeNotifierProvider<DocumentsStore,
-    Map<String, List<String>>>.internal(
+    Map<String, Set<String>>>.internal(
   DocumentsStore.new,
   name: r'documentsStoreProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,6 +21,6 @@ final documentsStoreProvider = AutoDisposeNotifierProvider<DocumentsStore,
   allTransitiveDependencies: null,
 );
 
-typedef _$DocumentsStore = AutoDisposeNotifier<Map<String, List<String>>>;
+typedef _$DocumentsStore = AutoDisposeNotifier<Map<String, Set<String>>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
