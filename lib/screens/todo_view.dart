@@ -174,8 +174,14 @@ class _TodoViewState extends ConsumerState<TodoView> {
             onClick: (todopair) => () {
               openChild(todopair.todo.id);
             },
-            whenEmpty:
-                todo != null ? addTodoButton() : Text("No todos available"),
+            whenEmpty: todo != null
+                ? addTodoButton()
+                : Center(
+                    child: Text(
+                      "No todos available",
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                  ),
             trailing: todo != null ? addTodoButton() : nil,
             nonPinned: taskList.isNotEmpty || todo == null
                 ? getTodos(
