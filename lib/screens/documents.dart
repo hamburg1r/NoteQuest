@@ -230,9 +230,11 @@ class _FilesViewState extends ConsumerState<FilesView> {
     String name = basenameWithoutExtension(path);
     String ext = extension(path);
 
-    Widget heading = Text(
-      'File: $name$ext',
-      style: Theme.of(ctx).textTheme.titleSmall,
+    Widget heading = Expanded(
+      child: Text(
+        '$name$ext',
+        style: Theme.of(ctx).textTheme.titleSmall,
+      ),
     );
     Widget? content = Text(mime ?? 'unknown mime type');
     Widget body = Center(
@@ -240,6 +242,51 @@ class _FilesViewState extends ConsumerState<FilesView> {
         "No preview available",
         style: Theme.of(ctx).textTheme.displaySmall,
       ),
+    );
+    Widget? icon = Icon(
+      Icons.insert_drive_file,
+      color: Colors.grey,
+    );
+    Widget? menu = MenuAnchor(
+      menuChildren: [
+        MenuItemButton(
+          onPressed: () async {
+            await documentsNotifier.delete(path, widget.folder);
+            setState(() {});
+          },
+          child: Row(
+            children: [
+              Icon(Icons.clear),
+              Text('Remove'),
+            ],
+          ),
+        ),
+        MenuItemButton(
+          onPressed: () async {
+            await documentsNotifier.delete(path, widget.folder);
+            setState(() {});
+          },
+          child: Row(
+            children: [
+              Icon(Icons.delete),
+              Text('Delete from disk'),
+            ],
+          ),
+        ),
+      ],
+      builder: (_, MenuController controller, Widget? child) {
+        return IconButton(
+          //focusNode: _buttonFocusNode,
+          onPressed: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
+          },
+          icon: const Icon(Icons.more_vert),
+        );
+      },
     );
 
     if (mime == 'text/plain') {
@@ -299,6 +346,10 @@ class _FilesViewState extends ConsumerState<FilesView> {
         },
       );
     } else if (mime?.startsWith('image/') ?? false) {
+      icon = Icon(
+        Icons.image,
+        color: Colors.orange,
+      );
       content = LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           final size = constraints.maxWidth; // Get the max width of the parent
@@ -318,10 +369,53 @@ class _FilesViewState extends ConsumerState<FilesView> {
         imageProvider: FileImage(file),
         enableRotation: true,
       );
+    } else if (mime?.endsWith('/pdf') ?? false) {
+      content = null;
+      icon = Icon(
+        Icons.picture_as_pdf,
+        color: Colors.red,
+      );
+    } else if (RegExp(
+            r'application/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.(document|template)|vnd\.oasis\.opendocument\.text)')
+        .hasMatch(mime ?? '')) {
+      content = null;
+      icon = Icon(
+        Icons.description,
+        color: Colors.blue,
+      );
+    } else if (RegExp(
+            r'application/(vnd\.ms-excel|vnd\.openxmlformats-officedocument\.spreadsheetml\.(sheet|template)|vnd\.oasis\.opendocument\.spreadsheet)')
+        .hasMatch(mime ?? '')) {
+      content = null;
+      icon = Icon(
+        Icons.table_chart,
+        color: Colors.green,
+      );
     }
+
     return ListTile(
-      title: heading,
-      subtitle: content,
+      title: Row(
+        children: [
+          icon,
+          SizedBox.square(
+            dimension: 8,
+          ),
+          heading,
+          menu,
+        ],
+      ),
+      subtitle: content != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox.square(
+                  dimension: 4,
+                ),
+                content,
+              ],
+            )
+          : null,
+      // leading: icon,
       onTap: () {
         makeRoute(
           ctx,
