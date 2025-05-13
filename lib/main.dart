@@ -5,6 +5,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:notequest/screens/calendar.dart';
 import 'package:notequest/screens/documents.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -153,6 +154,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         logger: logger,
       ),
       Documents(
+        appBar,
+        logger: logger,
+      ),
+      TodoCalendar(
         appBar,
         logger: logger,
       ),
